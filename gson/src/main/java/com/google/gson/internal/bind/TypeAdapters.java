@@ -123,7 +123,7 @@ public final class TypeAdapters {
                 break;
               default:
                 throw new JsonSyntaxException(
-                    "Invalid bitset value type: " + tokenType + "; at path " + in.getPath());
+                    "Invalid bitset value type: " + tokenType + "; at path " + in.getPathFile());
             }
             if (set) {
               bitset.set(i);

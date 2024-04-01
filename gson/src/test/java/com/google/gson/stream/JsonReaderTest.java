@@ -333,7 +333,7 @@ public final class JsonReaderTest {
     reader.beginObject();
     reader.skipValue();
     assertThat(reader.peek()).isEqualTo(JsonToken.NUMBER);
-    assertThat(reader.getPath()).isEqualTo("$.<skipped>");
+    assertThat(reader.getPathFile()).isEqualTo("$.<skipped>");
     assertThat(reader.nextInt()).isEqualTo(1);
   }
 
@@ -344,7 +344,7 @@ public final class JsonReaderTest {
     reader.beginObject();
     reader.skipValue();
     assertThat(reader.peek()).isEqualTo(JsonToken.NUMBER);
-    assertThat(reader.getPath()).isEqualTo("$.<skipped>");
+    assertThat(reader.getPathFile()).isEqualTo("$.<skipped>");
     assertThat(reader.nextInt()).isEqualTo(1);
   }
 
@@ -355,7 +355,7 @@ public final class JsonReaderTest {
     reader.beginObject();
     reader.skipValue();
     assertThat(reader.peek()).isEqualTo(JsonToken.NUMBER);
-    assertThat(reader.getPath()).isEqualTo("$.<skipped>");
+    assertThat(reader.getPathFile()).isEqualTo("$.<skipped>");
     assertThat(reader.nextInt()).isEqualTo(1);
   }
 
@@ -390,10 +390,10 @@ public final class JsonReaderTest {
     reader.endObject();
     assertThat(reader.peek()).isEqualTo(JsonToken.END_DOCUMENT);
 
-    assertThat(reader.getPath()).isEqualTo("$");
+    assertThat(reader.getPathFile()).isEqualTo("$");
     reader.skipValue();
     assertThat(reader.peek()).isEqualTo(JsonToken.END_DOCUMENT);
-    assertThat(reader.getPath()).isEqualTo("$");
+    assertThat(reader.getPathFile()).isEqualTo("$");
   }
 
   @Test
@@ -402,7 +402,7 @@ public final class JsonReaderTest {
     reader.beginArray();
     reader.skipValue();
     assertThat(reader.peek()).isEqualTo(JsonToken.END_DOCUMENT);
-    assertThat(reader.getPath()).isEqualTo("$");
+    assertThat(reader.getPathFile()).isEqualTo("$");
   }
 
   @Test
@@ -411,7 +411,7 @@ public final class JsonReaderTest {
     reader.beginObject();
     reader.skipValue();
     assertThat(reader.peek()).isEqualTo(JsonToken.END_DOCUMENT);
-    assertThat(reader.getPath()).isEqualTo("$");
+    assertThat(reader.getPathFile()).isEqualTo("$");
   }
 
   @Test
@@ -2011,7 +2011,7 @@ public final class JsonReaderTest {
     for (int i = 0; i < 40; i++) {
       reader.beginArray();
     }
-    assertThat(reader.getPath())
+    assertThat(reader.getPathFile())
         .isEqualTo(
             "$[0][0][0][0][0][0][0][0][0][0][0][0][0][0][0]"
                 + "[0][0][0][0][0][0][0][0][0][0][0][0][0][0][0][0][0][0][0][0][0][0][0][0][0]");
@@ -2035,7 +2035,7 @@ public final class JsonReaderTest {
       reader.beginObject();
       assertThat(reader.nextName()).isEqualTo("a");
     }
-    assertThat(reader.getPath())
+    assertThat(reader.getPathFile())
         .isEqualTo(
             "$.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a"
                 + ".a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a");

@@ -68,7 +68,7 @@ import java.util.regex.Pattern;
  * <ul>
  *   <li>{@link #setFormattingStyle(FormattingStyle)}, the default is {@link
  *       FormattingStyle#COMPACT}
- *   <li>{@link #setHtmlSafe(boolean)}, by default HTML characters are not escaped in the JSON
+ *   <li>{@link #setsafeJsonToHtmlTranslation(boolean)}, by default HTML characters are not escaped in the JSON
  *       output
  *   <li>{@link #setStrictness(Strictness)}, the default is {@link Strictness#LEGACY_STRICT}
  *   <li>{@link #setSerializeNulls(boolean)}, by default {@code null} is serialized
@@ -218,7 +218,7 @@ public class JsonWriter implements Closeable, Flushable {
 
   private Strictness strictness = Strictness.LEGACY_STRICT;
 
-  private boolean htmlSafe;
+  private boolean safeJsonToHtmlTranslation;
 
   private String deferredName;
 
@@ -360,15 +360,15 @@ public class JsonWriter implements Closeable, Flushable {
    * before writing them to the stream. Without this setting, your XML/HTML encoder should replace
    * these characters with the corresponding escape sequences.
    */
-  public final void setHtmlSafe(boolean htmlSafe) {
-    this.htmlSafe = htmlSafe;
+  public final void setsafeJsonToHtmlTranslation(boolean safeJsonToHtmlTranslation) {
+    this.safeJsonToHtmlTranslation = safeJsonToHtmlTranslation;
   }
 
   /**
    * Returns true if this writer writes JSON that's safe for inclusion in HTML and XML documents.
    */
-  public final boolean isHtmlSafe() {
-    return htmlSafe;
+  public final boolean issafeJsonToHtmlTranslation() {
+    return safeJsonToHtmlTranslation;
   }
 
   /**
@@ -734,7 +734,7 @@ public class JsonWriter implements Closeable, Flushable {
   }
 
   private void string(String value) throws IOException {
-    String[] replacements = htmlSafe ? HTML_SAFE_REPLACEMENT_CHARS : REPLACEMENT_CHARS;
+    String[] replacements = safeJsonToHtmlTranslation ? HTML_SAFE_REPLACEMENT_CHARS : REPLACEMENT_CHARS;
     out.write('\"');
     int last = 0;
     int length = value.length();

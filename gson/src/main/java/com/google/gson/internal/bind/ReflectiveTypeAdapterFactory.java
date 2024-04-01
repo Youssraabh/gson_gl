@@ -231,7 +231,7 @@ public final class ReflectiveTypeAdapterFactory implements TypeAdapterFactory {
               "null is not allowed as value for record component '"
                   + fieldName
                   + "' of primitive type; at path "
-                  + reader.getPath());
+                  + reader.getPathFile());
         }
         target[index] = fieldValue;
       }

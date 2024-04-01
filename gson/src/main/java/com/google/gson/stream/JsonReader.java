@@ -1585,10 +1585,10 @@ public class JsonReader implements Closeable {
   String locationString() {
     int line = lineNumber + 1;
     int column = pos - lineStart + 1;
-    return " at line " + line + " column " + column + " path " + getPath();
+    return " at line " + line + " column " + column + " path " + getPathFile();
   }
 
-  private String getPath(boolean usePreviousPath) {
+  private String getPathFile(boolean usePreviousPath) {
     StringBuilder result = new StringBuilder().append('$');
     for (int i = 0; i < stackSize; i++) {
       int scope = stack[i];
@@ -1635,8 +1635,8 @@ public class JsonReader implements Closeable {
    * <p>This method can be useful to add additional context to exception messages <i>before</i> a
    * value is consumed, for example when the {@linkplain #peek() peeked} token is unexpected.
    */
-  public String getPath() {
-    return getPath(false);
+  public String getPathFile() {
+    return getPathFile(false);
   }
 
   /**
@@ -1654,7 +1654,7 @@ public class JsonReader implements Closeable {
    * value has been consumed.
    */
   public String getPreviousPath() {
-    return getPath(true);
+    return getPathFile(true);
   }
 
   /**

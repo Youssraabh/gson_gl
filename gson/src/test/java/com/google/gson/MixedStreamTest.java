@@ -103,16 +103,16 @@ public final class MixedStreamTest {
     JsonWriter jsonWriter = new JsonWriter(new StringWriter());
     jsonWriter.beginArray();
 
-    jsonWriter.setHtmlSafe(true);
+    jsonWriter.setsafeJsonToHtmlTranslation(true);
     jsonWriter.setLenient(true);
     gson.toJson(BLUE_MUSTANG, Car.class, jsonWriter);
-    assertThat(jsonWriter.isHtmlSafe()).isTrue();
+    assertThat(jsonWriter.issafeJsonToHtmlTranslation()).isTrue();
     assertThat(jsonWriter.isLenient()).isTrue();
 
-    jsonWriter.setHtmlSafe(false);
+    jsonWriter.setsafeJsonToHtmlTranslation(false);
     jsonWriter.setLenient(false);
     gson.toJson(BLUE_MUSTANG, Car.class, jsonWriter);
-    assertThat(jsonWriter.isHtmlSafe()).isFalse();
+    assertThat(jsonWriter.issafeJsonToHtmlTranslation()).isFalse();
     assertThat(jsonWriter.isLenient()).isFalse();
   }
 

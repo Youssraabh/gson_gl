@@ -39,7 +39,7 @@ public class JsonTreeReaderTest {
     JsonTreeReader in = new JsonTreeReader(new JsonObject());
     in.skipValue();
     assertThat(in.peek()).isEqualTo(JsonToken.END_DOCUMENT);
-    assertThat(in.getPath()).isEqualTo("$");
+    assertThat(in.getPathFile()).isEqualTo("$");
   }
 
   @Test
@@ -59,7 +59,7 @@ public class JsonTreeReaderTest {
     JsonTreeReader in = new JsonTreeReader(jsonObject);
     in.skipValue();
     assertThat(in.peek()).isEqualTo(JsonToken.END_DOCUMENT);
-    assertThat(in.getPath()).isEqualTo("$");
+    assertThat(in.getPathFile()).isEqualTo("$");
   }
 
   @Test
@@ -70,7 +70,7 @@ public class JsonTreeReaderTest {
     in.beginObject();
     in.skipValue();
     assertThat(in.peek()).isEqualTo(JsonToken.STRING);
-    assertThat(in.getPath()).isEqualTo("$.<skipped>");
+    assertThat(in.getPathFile()).isEqualTo("$.<skipped>");
     assertThat(in.nextString()).isEqualTo("value");
   }
 
@@ -81,10 +81,10 @@ public class JsonTreeReaderTest {
     reader.endObject();
     assertThat(reader.peek()).isEqualTo(JsonToken.END_DOCUMENT);
 
-    assertThat(reader.getPath()).isEqualTo("$");
+    assertThat(reader.getPathFile()).isEqualTo("$");
     reader.skipValue();
     assertThat(reader.peek()).isEqualTo(JsonToken.END_DOCUMENT);
-    assertThat(reader.getPath()).isEqualTo("$");
+    assertThat(reader.getPathFile()).isEqualTo("$");
   }
 
   @Test
@@ -93,7 +93,7 @@ public class JsonTreeReaderTest {
     reader.beginArray();
     reader.skipValue();
     assertThat(reader.peek()).isEqualTo(JsonToken.END_DOCUMENT);
-    assertThat(reader.getPath()).isEqualTo("$");
+    assertThat(reader.getPathFile()).isEqualTo("$");
   }
 
   @Test
@@ -102,7 +102,7 @@ public class JsonTreeReaderTest {
     reader.beginObject();
     reader.skipValue();
     assertThat(reader.peek()).isEqualTo(JsonToken.END_DOCUMENT);
-    assertThat(reader.getPath()).isEqualTo("$");
+    assertThat(reader.getPathFile()).isEqualTo("$");
   }
 
   @Test
