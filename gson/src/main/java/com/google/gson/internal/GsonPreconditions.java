@@ -31,8 +31,8 @@ import java.util.Objects;
  * @author Inderjeet Singh
  * @author Joel Leitch
  */
-public final class $Gson$Preconditions {
-  private $Gson$Preconditions() {
+public final class GsonPreconditions {
+  private GsonPreconditions() {
     throw new UnsupportedOperationException();
   }
 
