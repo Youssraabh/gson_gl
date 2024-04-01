@@ -34,7 +34,7 @@ public class SerializationBenchmark {
   @Param private boolean pretty;
 
   public static void main(String[] args) {
-    NonUploadingCaliperRunner.run(SerializationBenchmark.class, args);
+    CaliperRunnerBenchmark.run(SerializationBenchmark.class, args);
   }
 
   @BeforeExperiment

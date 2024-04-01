@@ -40,7 +40,7 @@ public class CollectionsDeserializationBenchmark {
   private String json;
 
   public static void main(String[] args) {
-    NonUploadingCaliperRunner.run(CollectionsDeserializationBenchmark.class, args);
+    CaliperRunnerBenchmark.run(CollectionsDeserializationBenchmark.class, args);
   }
 
   @BeforeExperiment

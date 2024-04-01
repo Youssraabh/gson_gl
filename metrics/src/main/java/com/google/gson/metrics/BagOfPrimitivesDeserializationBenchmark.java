@@ -35,7 +35,7 @@ public class BagOfPrimitivesDeserializationBenchmark {
   private String json;
 
   public static void main(String[] args) {
-    NonUploadingCaliperRunner.run(BagOfPrimitivesDeserializationBenchmark.class, args);
+    CaliperRunnerBenchmark.run(BagOfPrimitivesDeserializationBenchmark.class, args);
   }
 
   @BeforeExperiment

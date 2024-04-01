@@ -18,8 +18,8 @@ package com.google.gson.metrics;
 
 import com.google.caliper.runner.CaliperMain;
 
-class NonUploadingCaliperRunner {
-  private NonUploadingCaliperRunner() {}
+class CaliperRunnerBenchmark {
+  private CaliperRunnerBenchmark() {}
 
   private static String[] concat(String first, String... others) {
     if (others.length == 0) {
