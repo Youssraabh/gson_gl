@@ -196,7 +196,7 @@ public final class Gson {
   final boolean serializeNulls;
   final boolean complexMapKeySerialization;
   final boolean generateNonExecutableJson;
-  final boolean htmlSafe;
+  final boolean safeJsonToHtmlTranslation;
   final FormattingStyle formattingStyle;
   final Strictness strictness;
   final boolean serializeSpecialFloatingPointValues;
@@ -282,7 +282,7 @@ public final class Gson {
       boolean serializeNulls,
       boolean complexMapKeySerialization,
       boolean generateNonExecutableGson,
-      boolean htmlSafe,
+      boolean safeJsonToHtmlTranslation,
       FormattingStyle formattingStyle,
       Strictness strictness,
       boolean serializeSpecialFloatingPointValues,
@@ -305,7 +305,7 @@ public final class Gson {
     this.serializeNulls = serializeNulls;
     this.complexMapKeySerialization = complexMapKeySerialization;
     this.generateNonExecutableJson = generateNonExecutableGson;
-    this.htmlSafe = htmlSafe;
+    this.safeJsonToHtmlTranslation = safeJsonToHtmlTranslation;
     this.formattingStyle = formattingStyle;
     this.strictness = strictness;
     this.serializeSpecialFloatingPointValues = serializeSpecialFloatingPointValues;
@@ -443,8 +443,8 @@ public final class Gson {
    *
    * @see GsonBuilder#disableHtmlEscaping()
    */
-  public boolean htmlSafe() {
-    return htmlSafe;
+  public boolean safeJsonToHtmlTranslation() {
+    return safeJsonToHtmlTranslation;
   }
 
   private TypeAdapter<Number> doubleAdapter(boolean serializeSpecialFloatingPointValues) {
@@ -934,10 +934,10 @@ public final class Gson {
       writer.setStrictness(Strictness.LENIENT);
     }
 
-    boolean oldHtmlSafe = writer.isHtmlSafe();
+    boolean oldsafeJsonToHtmlTranslation = writer.issafeJsonToHtmlTranslation();
     boolean oldSerializeNulls = writer.getSerializeNulls();
 
-    writer.setHtmlSafe(htmlSafe);
+    writer.setsafeJsonToHtmlTranslation(safeJsonToHtmlTranslation);
     writer.setSerializeNulls(serializeNulls);
     try {
       adapter.write(writer, src);
@@ -948,7 +948,7 @@ public final class Gson {
           "AssertionError (GSON " + GsonBuildConfig.VERSION + "): " + e.getMessage(), e);
     } finally {
       writer.setStrictness(oldStrictness);
-      writer.setHtmlSafe(oldHtmlSafe);
+      writer.setsafeJsonToHtmlTranslation(oldsafeJsonToHtmlTranslation);
       writer.setSerializeNulls(oldSerializeNulls);
     }
   }
@@ -1005,10 +1005,10 @@ public final class Gson {
    */
   public void toJson(JsonElement jsonElement, JsonWriter writer) throws JsonIOException {
     Strictness oldStrictness = writer.getStrictness();
-    boolean oldHtmlSafe = writer.isHtmlSafe();
+    boolean oldsafeJsonToHtmlTranslation = writer.issafeJsonToHtmlTranslation();
     boolean oldSerializeNulls = writer.getSerializeNulls();
 
-    writer.setHtmlSafe(htmlSafe);
+    writer.setsafeJsonToHtmlTranslation(safeJsonToHtmlTranslation);
     writer.setSerializeNulls(serializeNulls);
 
     if (this.strictness != null) {
@@ -1026,7 +1026,7 @@ public final class Gson {
           "AssertionError (GSON " + GsonBuildConfig.VERSION + "): " + e.getMessage(), e);
     } finally {
       writer.setStrictness(oldStrictness);
-      writer.setHtmlSafe(oldHtmlSafe);
+      writer.setsafeJsonToHtmlTranslation(oldsafeJsonToHtmlTranslation);
       writer.setSerializeNulls(oldSerializeNulls);
     }
   }
@@ -1054,7 +1054,7 @@ public final class Gson {
     }
     JsonWriter jsonWriter = new JsonWriter(writer);
     jsonWriter.setFormattingStyle(formattingStyle);
-    jsonWriter.setHtmlSafe(htmlSafe);
+    jsonWriter.setsafeJsonToHtmlTranslation(safeJsonToHtmlTranslation);
     jsonWriter.setStrictness(strictness == null ? Strictness.LEGACY_STRICT : strictness);
     jsonWriter.setSerializeNulls(serializeNulls);
     return jsonWriter;

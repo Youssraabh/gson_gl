@@ -95,7 +95,7 @@ public final class GsonTest {
     assertThat(gson.excluder).isEqualTo(CUSTOM_EXCLUDER);
     assertThat(gson.fieldNamingStrategy()).isEqualTo(CUSTOM_FIELD_NAMING_STRATEGY);
     assertThat(gson.serializeNulls()).isTrue();
-    assertThat(gson.htmlSafe()).isFalse();
+    assertThat(gson.safeJsonToHtmlTranslation()).isFalse();
   }
 
   @Test

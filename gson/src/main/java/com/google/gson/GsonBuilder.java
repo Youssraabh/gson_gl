@@ -135,7 +135,7 @@ public final class GsonBuilder {
     this.serializeNulls = gson.serializeNulls;
     this.complexMapKeySerialization = gson.complexMapKeySerialization;
     this.generateNonExecutableJson = gson.generateNonExecutableJson;
-    this.escapeHtmlChars = gson.htmlSafe;
+    this.escapeHtmlChars = gson.safeJsonToHtmlTranslation;
     this.formattingStyle = gson.formattingStyle;
     this.strictness = gson.strictness;
     this.serializeSpecialFloatingPointValues = gson.serializeSpecialFloatingPointValues;
