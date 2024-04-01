@@ -100,30 +100,30 @@ public final class GsonTypes {
   }
 
   /**
-   * Returns a type that is functionally equal but not necessarily equal according to {@link
-   * Object#equals(Object) Object.equals()}. The returned type is {@link java.io.Serializable}.
+   * Returns a inputType that is functionally equal but not necessarily equal according to {@link
+   * Object#equals(Object) Object.equals()}. The returned inputType is {@link java.io.Serializable}.
    */
-  public static Type canonicalize(Type type) {
-    if (type instanceof Class) {
-      Class<?> c = (Class<?>) type;
+  public static Type canonicalize(Type inputType) {
+    if (inputType instanceof Class) {
+      Class<?> c = (Class<?>) inputType;
       return c.isArray() ? new GenericArrayTypeImpl(canonicalize(c.getComponentType())) : c;
 
-    } else if (type instanceof ParameterizedType) {
-      ParameterizedType p = (ParameterizedType) type;
+    } else if (inputType instanceof ParameterizedType) {
+      ParameterizedType p = (ParameterizedType) inputType;
       return new ParameterizedTypeImpl(
           p.getOwnerType(), p.getRawType(), p.getActualTypeArguments());
 
-    } else if (type instanceof GenericArrayType) {
-      GenericArrayType g = (GenericArrayType) type;
+    } else if (inputType instanceof GenericArrayType) {
+      GenericArrayType g = (GenericArrayType) inputType;
       return new GenericArrayTypeImpl(g.getGenericComponentType());
 
-    } else if (type instanceof WildcardType) {
-      WildcardType w = (WildcardType) type;
+    } else if (inputType instanceof WildcardType) {
+      WildcardType w = (WildcardType) inputType;
       return new WildcardTypeImpl(w.getUpperBounds(), w.getLowerBounds());
 
     } else {
-      // type is either serializable as-is or unsupported
-      return type;
+      // inputType is either serializable as-is or unsupported
+      return inputType;
     }
   }
 
