@@ -27,7 +27,7 @@ import com.google.gson.TypeAdapter;
 import com.google.gson.TypeAdapterFactory;
 import com.google.gson.annotations.JsonAdapter;
 import com.google.gson.annotations.SerializedName;
-import com.google.gson.internal.$Gson$Types;
+import com.google.gson.internal.GsonTypes;
 import com.google.gson.internal.ConstructorConstructor;
 import com.google.gson.internal.Excluder;
 import com.google.gson.internal.ObjectConstructor;
@@ -363,7 +363,7 @@ public final class ReflectiveTypeAdapterFactory implements TypeAdapterFactory {
           ReflectionHelper.makeAccessible(field);
         }
 
-        Type fieldType = $Gson$Types.resolve(type.getType(), raw, field.getGenericType());
+        Type fieldType = GsonTypes.resolve(type.getType(), raw, field.getGenericType());
         List<String> fieldNames = getFieldNames(field);
         String serializedName = fieldNames.get(0);
         BoundField boundField =
@@ -393,7 +393,7 @@ public final class ReflectiveTypeAdapterFactory implements TypeAdapterFactory {
           }
         }
       }
-      type = TypeToken.get($Gson$Types.resolve(type.getType(), raw, raw.getGenericSuperclass()));
+      type = TypeToken.get(GsonTypes.resolve(type.getType(), raw, raw.getGenericSuperclass()));
       raw = type.getRawType();
     }
     return new FieldsData(deserializedFields, new ArrayList<>(serializedFields.values()));

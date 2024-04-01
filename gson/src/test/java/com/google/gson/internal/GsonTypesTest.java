@@ -30,24 +30,24 @@ public final class GsonTypesTest {
   @Test
   public void testNewParameterizedTypeWithoutOwner() throws Exception {
     // List<A>. List is a top-level class
-    ParameterizedType type = $Gson$Types.newParameterizedTypeWithOwner(null, List.class, A.class);
+    ParameterizedType type = GsonTypes.newParameterizedTypeWithOwner(null, List.class, A.class);
     assertThat(type.getOwnerType()).isNull();
     assertThat(type.getRawType()).isEqualTo(List.class);
     assertThat(type.getActualTypeArguments()).asList().containsExactly(A.class);
 
     // A<B>. A is a static inner class.
-    type = $Gson$Types.newParameterizedTypeWithOwner(null, A.class, B.class);
+    type = GsonTypes.newParameterizedTypeWithOwner(null, A.class, B.class);
     assertThat(getFirstTypeArgument(type)).isEqualTo(B.class);
 
     IllegalArgumentException e =
         assertThrows(
             IllegalArgumentException.class,
             // NonStaticInner<A> is not allowed without owner
-            () -> $Gson$Types.newParameterizedTypeWithOwner(null, NonStaticInner.class, A.class));
+            () -> GsonTypes.newParameterizedTypeWithOwner(null, NonStaticInner.class, A.class));
     assertThat(e).hasMessageThat().isEqualTo("Must specify owner type for " + NonStaticInner.class);
 
     type =
-        $Gson$Types.newParameterizedTypeWithOwner(
+        GsonTypes.newParameterizedTypeWithOwner(
             GsonTypesTest.class, NonStaticInner.class, A.class);
     assertThat(type.getOwnerType()).isEqualTo(GsonTypesTest.class);
     assertThat(type.getRawType()).isEqualTo(NonStaticInner.class);
@@ -56,13 +56,13 @@ public final class GsonTypesTest {
     final class D {}
 
     // D<A> is allowed since D has no owner type
-    type = $Gson$Types.newParameterizedTypeWithOwner(null, D.class, A.class);
+    type = GsonTypes.newParameterizedTypeWithOwner(null, D.class, A.class);
     assertThat(type.getOwnerType()).isNull();
     assertThat(type.getRawType()).isEqualTo(D.class);
     assertThat(type.getActualTypeArguments()).asList().containsExactly(A.class);
 
     // A<D> is allowed.
-    type = $Gson$Types.newParameterizedTypeWithOwner(null, A.class, D.class);
+    type = GsonTypes.newParameterizedTypeWithOwner(null, A.class, D.class);
     assertThat(getFirstTypeArgument(type)).isEqualTo(D.class);
   }
 
@@ -70,7 +70,7 @@ public final class GsonTypesTest {
   public void testGetFirstTypeArgument() throws Exception {
     assertThat(getFirstTypeArgument(A.class)).isNull();
 
-    Type type = $Gson$Types.newParameterizedTypeWithOwner(null, A.class, B.class, C.class);
+    Type type = GsonTypes.newParameterizedTypeWithOwner(null, A.class, B.class, C.class);
     assertThat(getFirstTypeArgument(type)).isEqualTo(B.class);
   }
 
@@ -96,6 +96,6 @@ public final class GsonTypesTest {
     if (actualTypeArguments.length == 0) {
       return null;
     }
-    return $Gson$Types.canonicalize(actualTypeArguments[0]);
+    return GsonTypes.canonicalize(actualTypeArguments[0]);
   }
 }
