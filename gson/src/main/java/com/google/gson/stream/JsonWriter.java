@@ -68,8 +68,8 @@ import java.util.regex.Pattern;
  * <ul>
  *   <li>{@link #setFormattingStyle(FormattingStyle)}, the default is {@link
  *       FormattingStyle#COMPACT}
- *   <li>{@link #setsafeJsonToHtmlTranslation(boolean)}, by default HTML characters are not escaped in the JSON
- *       output
+ *   <li>{@link #setsafeJsonToHtmlTranslation(boolean)}, by default HTML characters are not escaped
+ *       in the JSON output
  *   <li>{@link #setStrictness(Strictness)}, the default is {@link Strictness#LEGACY_STRICT}
  *   <li>{@link #setSerializeNulls(boolean)}, by default {@code null} is serialized
  * </ul>
@@ -734,7 +734,8 @@ public class JsonWriter implements Closeable, Flushable {
   }
 
   private void string(String value) throws IOException {
-    String[] replacements = safeJsonToHtmlTranslation ? HTML_SAFE_REPLACEMENT_CHARS : REPLACEMENT_CHARS;
+    String[] replacements =
+        safeJsonToHtmlTranslation ? HTML_SAFE_REPLACEMENT_CHARS : REPLACEMENT_CHARS;
     out.write('\"');
     int last = 0;
     int length = value.length();

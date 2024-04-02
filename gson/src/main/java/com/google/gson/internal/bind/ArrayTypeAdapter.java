@@ -47,8 +47,7 @@ public final class ArrayTypeAdapter<E> extends TypeAdapter<Object> {
 
           @SuppressWarnings({"unchecked", "rawtypes"})
           TypeAdapter<T> arrayAdapter =
-              new ArrayTypeAdapter(
-                  gson, componentTypeAdapter, GsonTypes.getRawType(componentType));
+              new ArrayTypeAdapter(gson, componentTypeAdapter, GsonTypes.getRawType(componentType));
           return arrayAdapter;
         }
       };

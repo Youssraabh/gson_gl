@@ -47,8 +47,7 @@ public final class GsonTypesTest {
     assertThat(e).hasMessageThat().isEqualTo("Must specify owner type for " + NonStaticInner.class);
 
     type =
-        GsonTypes.newParameterizedTypeWithOwner(
-            GsonTypesTest.class, NonStaticInner.class, A.class);
+        GsonTypes.newParameterizedTypeWithOwner(GsonTypesTest.class, NonStaticInner.class, A.class);
     assertThat(type.getOwnerType()).isEqualTo(GsonTypesTest.class);
     assertThat(type.getRawType()).isEqualTo(NonStaticInner.class);
     assertThat(type.getActualTypeArguments()).asList().containsExactly(A.class);

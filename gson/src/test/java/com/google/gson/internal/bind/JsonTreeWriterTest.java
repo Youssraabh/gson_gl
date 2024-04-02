@@ -329,7 +329,7 @@ public final class JsonTreeWriterTest {
             "getStrictness()",
             "setIndent(java.lang.String)",
             "setsafeJsonToHtmlTranslation(boolean)",
-            "isHtmlSafe()",
+            "issafeJsonToHtmlTranslation()",
             "setFormattingStyle(com.google.gson.FormattingStyle)",
             "getFormattingStyle()",
             "setSerializeNulls(boolean)",

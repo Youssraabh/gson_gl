@@ -25,8 +25,6 @@ import com.google.gson.JsonPrimitive;
 import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonToken;
 import com.google.gson.stream.MalformedJsonException;
-import org.jetbrains.annotations.NotNull;
-
 import java.io.IOException;
 import java.io.Reader;
 import java.util.Arrays;
@@ -345,7 +343,6 @@ public final class JsonTreeReader extends JsonReader {
     }
     stack[stackSize++] = newTop;
   }
-
 
   private String getPathFile(boolean usePreviousPath) {
     StringBuilder result = new StringBuilder().append('$');
