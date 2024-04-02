@@ -287,9 +287,7 @@ public final class GsonTypes {
     }
     checkArgument(supertype.isAssignableFrom(contextRawType));
     return resolve(
-        context,
-        contextRawType,
-        GsonTypes.getGenericSupertype(context, contextRawType, supertype));
+        context, contextRawType, GsonTypes.getGenericSupertype(context, contextRawType, supertype));
   }
 
   /**
@@ -345,7 +343,7 @@ public final class GsonTypes {
     return resolve(context, contextRawType, toResolve, new HashMap<TypeVariable<?>, Type>());
   }
 
-  /**private static Type resolve(
+  private static Type resolve(
       Type context,
       Class<?> contextRawType,
       Type toResolve,
@@ -445,58 +443,8 @@ public final class GsonTypes {
       visitedTypeVariables.put(resolving, toResolve);
     }
     return toResolve;
-  }*/
-
-  private static Type resolve(Type context, Class<?> contextRawType, Type toResolve, Map<TypeVariable<?>, Type> visitedTypeVariables) {
-    if (toResolve instanceof TypeVariable) {
-      return resolveTypeVariable(context, contextRawType, (TypeVariable<?>) toResolve, visitedTypeVariables);
-    } else if (toResolve instanceof Class && ((Class<?>) toResolve).isArray()) {
-      return resolveArrayClass(context, contextRawType, (Class<?>) toResolve, visitedTypeVariables);
-    } else if (toResolve instanceof GenericArrayType) {
-      return resolveGenericArrayType(context, contextRawType, (GenericArrayType) toResolve, visitedTypeVariables);
-    } else if (toResolve instanceof ParameterizedType) {
-      return resolveParameterizedType(context, contextRawType, (ParameterizedType) toResolve, visitedTypeVariables);
-    } else if (toResolve instanceof WildcardType) {
-      return resolveWildcardType(context, contextRawType, (WildcardType) toResolve, visitedTypeVariables);
-    }
-    return toResolve;
-  }
-  
-  private static Type resolveArrayClass(Type context, Class<?> contextRawType, Class<?> original, Map<TypeVariable<?>, Type> visitedTypeVariables) {
-    Type componentType = original.getComponentType();
-    Type newComponentType = resolve(context, contextRawType, componentType, visitedTypeVariables);
-    return (componentType == newComponentType) ? original : Array.newInstance((Class<?>)newComponentType, 0).getClass();
-  }
-  private static Type resolveGenericArrayType(Type context, Class<?> contextRawType, GenericArrayType genericArrayType, Map<TypeVariable<?>, Type> visitedTypeVariables) {
-    Type componentType = genericArrayType.getGenericComponentType();
-    Type resolvedComponentType = resolve(context, contextRawType, componentType, visitedTypeVariables);
-    return (componentType == resolvedComponentType) ? genericArrayType : new GenericArrayTypeImpl(resolvedComponentType);
-  }
-  private static Type resolveParameterizedType(Type context, Class<?> contextRawType, ParameterizedType parameterizedType, Map<TypeVariable<?>, Type> visitedTypeVariables) {
-    Type ownerType = parameterizedType.getOwnerType();
-    Type resolvedOwnerType = resolve(context, contextRawType, ownerType, visitedTypeVariables);
-    Type rawType = parameterizedType.getRawType();
-    Type[] actualTypeArguments = parameterizedType.getActualTypeArguments();
-    for (int i = 0; i < actualTypeArguments.length; i++) {
-      actualTypeArguments[i] = resolve(context, contextRawType, actualTypeArguments[i], visitedTypeVariables);
-    }
-    return new ParameterizedTypeImpl(resolvedOwnerType, rawType, actualTypeArguments);
   }
 
-
-  private static Type resolveWildcardType(Type context, Class<?> contextRawType, WildcardType wildcardType, Map<TypeVariable<?>, Type> visitedTypeVariables) {
-    Type[] lowerBounds = wildcardType.getLowerBounds();
-    Type[] upperBounds = wildcardType.getUpperBounds();
-    for (int i = 0; i < lowerBounds.length; i++) {
-      lowerBounds[i] = resolve(context, contextRawType, lowerBounds[i], visitedTypeVariables);
-    }
-    for (int i = 0; i < upperBounds.length; i++) {
-      upperBounds[i] = resolve(context, contextRawType, upperBounds[i], visitedTypeVariables);
-    }
-    return new WildcardTypeImpl(upperBounds, lowerBounds);
-  }
-
-  @SuppressWarnings("unused")
   private static Type resolveTypeVariable(
       Type context, Class<?> contextRawType, TypeVariable<?> unknown) {
     Class<?> declaredByRaw = declaringClassOf(unknown);
@@ -514,27 +462,6 @@ public final class GsonTypes {
 
     return unknown;
   }
-
-  private static Type resolveTypeVariable(Type context, Class<?> contextRawType, TypeVariable<?> typeVariable, Map<TypeVariable<?>, Type> visitedTypeVariables) {
-    Class<?> declaredByRaw = declaringClassOf(typeVariable);
-
-    // we can't reduce this further
-    if (declaredByRaw == null) {
-      return typeVariable;
-    }
-
-    Type declaredBy = getGenericSupertype(context, contextRawType, declaredByRaw);
-    if (declaredBy instanceof ParameterizedType) {
-      int index = indexOf(declaredByRaw.getTypeParameters(), typeVariable);
-      Type resolvedType = ((ParameterizedType) declaredBy).getActualTypeArguments()[index];
-      
-      // If the type variable could be resolved, update the map and return the resolved type
-      visitedTypeVariables.put(typeVariable, resolvedType);
-      return resolvedType;
-    }
-
-    return typeVariable;
-}
 
   private static int indexOf(Object[] array, Object toFind) {
     for (int i = 0, length = array.length; i < length; i++) {
