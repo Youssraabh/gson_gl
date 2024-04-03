@@ -20,7 +20,6 @@ package com.google.gson.internal;
 import com.google.errorprone.annotations.CanIgnoreReturnValue;
 import java.io.IOException;
 import java.io.InvalidObjectException;
-import java.io.ObjectInputStream;
 import java.io.ObjectStreamException;
 import java.io.Serializable;
 import java.util.AbstractMap;
@@ -672,7 +671,8 @@ public final class LinkedTreeMap<K, V> extends AbstractMap<K, V> implements Seri
     return new LinkedHashMap<>(this);
   }
 
-  private void readObject(ObjectInputStream in) throws IOException {
+  @SuppressWarnings("unused")
+  private void readObject() throws IOException {
     // Don't permit directly deserializing this class; writeReplace() should have written a
     // replacement
     throw new InvalidObjectException("Deserialization is unsupported");
