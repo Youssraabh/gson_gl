@@ -615,18 +615,18 @@ public class DefaultTypeAdaptersTest {
   @Test
   public void testJsonArraySerialization() {
     JsonArray array = new JsonArray();
-    array.add(new JsonPrimitive(1));
-    array.add(new JsonPrimitive(2));
-    array.add(new JsonPrimitive(3));
+    array.addElement(new JsonPrimitive(1));
+    array.addElement(new JsonPrimitive(2));
+    array.addElement(new JsonPrimitive(3));
     assertThat(gson.toJson(array, JsonElement.class)).isEqualTo("[1,2,3]");
   }
 
   @Test
   public void testJsonArrayDeserialization() {
     JsonArray array = new JsonArray();
-    array.add(new JsonPrimitive(1));
-    array.add(new JsonPrimitive(2));
-    array.add(new JsonPrimitive(3));
+    array.addElement(new JsonPrimitive(1));
+    array.addElement(new JsonPrimitive(2));
+    array.addElement(new JsonPrimitive(3));
 
     String json = "[1,2,3]";
     assertThat(gson.fromJson(json, JsonElement.class)).isEqualTo(array);

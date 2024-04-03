@@ -30,7 +30,7 @@ public class JsonArrayAsListTest {
   @Test
   public void testGet() {
     JsonArray a = new JsonArray();
-    a.add(1);
+    a.addNumber(1);
 
     List<JsonElement> list = a.asList();
     assertThat(list.get(0)).isEqualTo(new JsonPrimitive(1));
@@ -38,14 +38,14 @@ public class JsonArrayAsListTest {
     assertThrows(IndexOutOfBoundsException.class, () -> list.get(-1));
     assertThrows(IndexOutOfBoundsException.class, () -> list.get(2));
 
-    a.add((JsonElement) null);
+    a.addElement((JsonElement) null);
     assertThat(list.get(1)).isEqualTo(JsonNull.INSTANCE);
   }
 
   @Test
   public void testSize() {
     JsonArray a = new JsonArray();
-    a.add(1);
+    a.addNumber(1);
 
     List<JsonElement> list = a.asList();
     assertThat(list).hasSize(1);
@@ -56,7 +56,7 @@ public class JsonArrayAsListTest {
   @Test
   public void testSet() {
     JsonArray a = new JsonArray();
-    a.add(1);
+    a.addNumber(1);
 
     List<JsonElement> list = a.asList();
     JsonElement old = list.set(0, new JsonPrimitive(2));
@@ -74,7 +74,7 @@ public class JsonArrayAsListTest {
   @Test
   public void testAdd() {
     JsonArray a = new JsonArray();
-    a.add(1);
+    a.addNumber(1);
 
     List<JsonElement> list = a.asList();
     list.add(0, new JsonPrimitive(2));
@@ -105,7 +105,7 @@ public class JsonArrayAsListTest {
   @Test
   public void testAddAll() {
     JsonArray a = new JsonArray();
-    a.add(1);
+    a.addNumber(1);
 
     List<JsonElement> list = a.asList();
     list.addAll(Arrays.asList(new JsonPrimitive(2), new JsonPrimitive(3)));
@@ -132,7 +132,7 @@ public class JsonArrayAsListTest {
   @Test
   public void testRemoveIndex() {
     JsonArray a = new JsonArray();
-    a.add(1);
+    a.addNumber(1);
 
     List<JsonElement> list = a.asList();
     assertThat(list.remove(0)).isEqualTo(new JsonPrimitive(1));
@@ -145,7 +145,7 @@ public class JsonArrayAsListTest {
   @Test
   public void testRemoveElement() {
     JsonArray a = new JsonArray();
-    a.add(1);
+    a.addNumber(1);
 
     List<JsonElement> list = a.asList();
     assertThat(list.remove(new JsonPrimitive(1))).isTrue();
@@ -159,7 +159,7 @@ public class JsonArrayAsListTest {
   @Test
   public void testClear() {
     JsonArray a = new JsonArray();
-    a.add(1);
+    a.addNumber(1);
 
     List<JsonElement> list = a.asList();
     list.clear();
@@ -170,7 +170,7 @@ public class JsonArrayAsListTest {
   @Test
   public void testContains() {
     JsonArray a = new JsonArray();
-    a.add(1);
+    a.addNumber(1);
 
     List<JsonElement> list = a.asList();
     assertThat(list).contains(new JsonPrimitive(1));
@@ -186,8 +186,8 @@ public class JsonArrayAsListTest {
   public void testIndexOf() {
     JsonArray a = new JsonArray();
     // Add the same value twice to test indexOf vs. lastIndexOf
-    a.add(1);
-    a.add(1);
+    a.addNumber(1);
+    a.addNumber(1);
 
     List<JsonElement> list = a.asList();
     assertThat(list.indexOf(new JsonPrimitive(1))).isEqualTo(0);
@@ -206,7 +206,7 @@ public class JsonArrayAsListTest {
   @Test
   public void testToArray() {
     JsonArray a = new JsonArray();
-    a.add(1);
+    a.addNumber(1);
 
     List<JsonElement> list = a.asList();
     assertThat(list.toArray()).isEqualTo(new Object[] {new JsonPrimitive(1)});
@@ -227,7 +227,7 @@ public class JsonArrayAsListTest {
   @Test
   public void testEqualsHashCode() {
     JsonArray a = new JsonArray();
-    a.add(1);
+    a.addNumber(1);
 
     List<JsonElement> list = a.asList();
     MoreAsserts.assertEqualsAndHashCode(list, Collections.singletonList(new JsonPrimitive(1)));
@@ -241,7 +241,7 @@ public class JsonArrayAsListTest {
     JsonArray a = new JsonArray();
     List<JsonElement> list = a.asList();
 
-    a.add(1);
+    a.addNumber(1);
     assertThat(list).hasSize(1);
     assertThat(list.get(0)).isEqualTo(new JsonPrimitive(1));
 

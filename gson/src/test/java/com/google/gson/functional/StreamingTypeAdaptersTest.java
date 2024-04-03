@@ -246,7 +246,7 @@ public final class StreamingTypeAdaptersTest {
     JsonObject jesseObject = new JsonObject();
     jesseObject.add("age", new JsonPrimitive(30));
     jesseObject.add("name", new JsonPrimitive("Jesse"));
-    passengersArray.add(jesseObject);
+    passengersArray.addElement(jesseObject);
     truckObject.add("passengers", passengersArray);
 
     Truck truck = truckAdapter.fromJsonTree(truckObject);

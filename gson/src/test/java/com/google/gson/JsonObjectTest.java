@@ -234,7 +234,7 @@ public class JsonObjectTest {
     original.add("key", firstEntry);
 
     JsonObject copy = original.deepCopy();
-    firstEntry.add(new JsonPrimitive("z"));
+    firstEntry.addElement(new JsonPrimitive("z"));
 
     assertThat(original.get("key").getAsJsonArray()).hasSize(1);
     assertThat(copy.get("key").getAsJsonArray()).hasSize(0);

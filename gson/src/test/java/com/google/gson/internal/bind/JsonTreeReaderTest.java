@@ -46,8 +46,8 @@ public class JsonTreeReaderTest {
   public void testSkipValue_filledJsonObject() throws IOException {
     JsonObject jsonObject = new JsonObject();
     JsonArray jsonArray = new JsonArray();
-    jsonArray.add('c');
-    jsonArray.add("text");
+    jsonArray.addCharacter('c');
+    jsonArray.addString("text");
     jsonObject.add("a", jsonArray);
     jsonObject.addProperty("b", true);
     jsonObject.addProperty("i", 1);
@@ -124,7 +124,7 @@ public class JsonTreeReaderTest {
     }
 
     JsonArray array = new JsonArray();
-    array.add(new CustomSubclass());
+    array.addElement(new CustomSubclass());
 
     JsonTreeReader reader = new JsonTreeReader(array);
     reader.beginArray();

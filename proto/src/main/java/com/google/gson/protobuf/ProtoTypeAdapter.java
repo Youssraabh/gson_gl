@@ -235,7 +235,7 @@ public class ProtoTypeAdapter implements JsonSerializer<Message>, JsonDeserializ
           Collection<EnumValueDescriptor> enumDescs =
               (Collection<EnumValueDescriptor>) fieldPair.getValue();
           for (EnumValueDescriptor enumDesc : enumDescs) {
-            array.add(context.serialize(getEnumValue(enumDesc)));
+            array.addElement(context.serialize(getEnumValue(enumDesc)));
             ret.add(name, array);
           }
         } else {

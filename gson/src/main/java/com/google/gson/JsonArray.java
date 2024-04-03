@@ -67,7 +67,7 @@ public final class JsonArray extends JsonElement implements Iterable<JsonElement
     if (!elements.isEmpty()) {
       JsonArray result = new JsonArray(elements.size());
       for (JsonElement element : elements) {
-        result.add(element.deepCopy());
+        result.addElement(element.deepCopy());
       }
       return result;
     }
@@ -80,7 +80,7 @@ public final class JsonArray extends JsonElement implements Iterable<JsonElement
    * @param bool the boolean that needs to be added to the array.
    * @since 2.4
    */
-  public void add(Boolean bool) {
+  public void addBoolean(Boolean bool) {
     elements.add(bool == null ? JsonNull.INSTANCE : new JsonPrimitive(bool));
   }
 
@@ -90,7 +90,7 @@ public final class JsonArray extends JsonElement implements Iterable<JsonElement
    * @param character the character that needs to be added to the array.
    * @since 2.4
    */
-  public void add(Character character) {
+  public void addCharacter(Character character) {
     elements.add(character == null ? JsonNull.INSTANCE : new JsonPrimitive(character));
   }
 
@@ -100,7 +100,7 @@ public final class JsonArray extends JsonElement implements Iterable<JsonElement
    * @param number the number that needs to be added to the array.
    * @since 2.4
    */
-  public void add(Number number) {
+  public void addNumber(Number number) {
     elements.add(number == null ? JsonNull.INSTANCE : new JsonPrimitive(number));
   }
 
@@ -110,7 +110,7 @@ public final class JsonArray extends JsonElement implements Iterable<JsonElement
    * @param string the string that needs to be added to the array.
    * @since 2.4
    */
-  public void add(String string) {
+  public void addString(String string) {
     elements.add(string == null ? JsonNull.INSTANCE : new JsonPrimitive(string));
   }
 
@@ -119,7 +119,7 @@ public final class JsonArray extends JsonElement implements Iterable<JsonElement
    *
    * @param element the element that needs to be added to the array.
    */
-  public void add(JsonElement element) {
+  public void addElement(JsonElement element) {
     if (element == null) {
       element = JsonNull.INSTANCE;
     }

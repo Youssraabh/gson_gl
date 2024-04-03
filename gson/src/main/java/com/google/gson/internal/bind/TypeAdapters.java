@@ -888,7 +888,7 @@ public final class TypeAdapters {
               }
 
               if (current instanceof JsonArray) {
-                ((JsonArray) current).add(value);
+                ((JsonArray) current).addElement(value);
               } else {
                 ((JsonObject) current).add(name, value);
               }

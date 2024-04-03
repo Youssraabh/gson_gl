@@ -339,7 +339,7 @@ public class MapTest {
                       Map<String, Long> src, Type typeOfSrc, JsonSerializationContext context) {
                     JsonArray array = new JsonArray();
                     for (long value : src.values()) {
-                      array.add(new JsonPrimitive(value));
+                      array.addElement(new JsonPrimitive(value));
                     }
                     return array;
                   }
