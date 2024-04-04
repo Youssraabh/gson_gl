@@ -386,15 +386,11 @@ public final class TypeAdapters {
 
   public static final TypeAdapter<Number> FLOAT =
       new TypeAdapter<Number>() {
+
         @Override
         public Number read(JsonReader in) throws IOException {
-          if (in.peek() == JsonToken.NULL) {
-            in.nextNull();
-            return null;
-          }
-          return (float) in.nextDouble();
+            return (float) in.nextDouble();
         }
-
         @Override
         public void write(JsonWriter out, Number value) throws IOException {
           if (value == null) {
@@ -411,15 +407,11 @@ public final class TypeAdapters {
 
   public static final TypeAdapter<Number> DOUBLE =
       new TypeAdapter<Number>() {
+
         @Override
         public Number read(JsonReader in) throws IOException {
-          if (in.peek() == JsonToken.NULL) {
-            in.nextNull();
-            return null;
-          }
-          return in.nextDouble();
+            return in.nextDouble();
         }
-
         @Override
         public void write(JsonWriter out, Number value) throws IOException {
           if (value == null) {
