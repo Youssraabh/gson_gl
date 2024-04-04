@@ -87,4 +87,18 @@ public class SecurityTest {
     assertThat(target.stringValue).isEqualTo(")]}'\n");
     assertThat(target.intValue).isEqualTo(2);
   }
+
+
+  /**
+   * Test method for deserializing a JSON string containing a null value.
+   * This test checks if the {@code stringValue} field in {@link BagOfPrimitives} is set to null
+   * after deserialization of a JSON string that contains {@code "stringValue":null}.
+   */
+  @Test
+  public void testNullValueDeserialization(){
+    String json = "{\"stringValue\":null}";
+    Gson gson = gsonBuilder.create();
+    BagOfPrimitives target = gson.fromJson(json, BagOfPrimitives.class);
+    assertThat(target.stringValue).isNull();
+  }
 }
