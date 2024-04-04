@@ -734,37 +734,41 @@ public class JsonWriter implements Closeable, Flushable {
   }
 
   private void string(String value) throws IOException {
-    String[] replacements =
-        safeJsonToHtmlTranslation ? HTML_SAFE_REPLACEMENT_CHARS : REPLACEMENT_CHARS;
+    String[] replacements = safeJsonToHtmlTranslation ? HTML_SAFE_REPLACEMENT_CHARS : REPLACEMENT_CHARS;
     out.write('\"');
     int last = 0;
     int length = value.length();
     for (int i = 0; i < length; i++) {
       char c = value.charAt(i);
-      String replacement;
-      if (c < 128) {
-        replacement = replacements[c];
-        if (replacement == null) {
-          continue;
-        }
-      } else if (c == '\u2028') {
-        replacement = "\\u2028";
-      } else if (c == '\u2029') {
-        replacement = "\\u2029";
-      } else {
-        continue;
+      String replacement = getReplacement(c, replacements);
+      if (replacement != null) {
+        writeSubString(value, last, i);
+        out.write(replacement);
+        last = i + 1;
       }
-      if (last < i) {
-        out.write(value, last, i - last);
-      }
-      out.write(replacement);
-      last = i + 1;
     }
-    if (last < length) {
-      out.write(value, last, length - last);
-    }
+    writeSubString(value, last, length);
     out.write('\"');
   }
+
+  private String getReplacement(char c, String[] replacements) {
+    if (c < 128) {
+      return replacements[c];
+    } else if (c == '\u2028') {
+      return "\\u2028";
+    } else if (c == '\u2029') {
+      return "\\u2029";
+    } else {
+      return null;
+    }
+  }
+
+  private void writeSubString(String value, int startIndex, int endIndex) throws IOException {
+    if (endIndex > startIndex) {
+      out.write(value, startIndex, endIndex - startIndex);
+    }
+  }
+
 
   private void newline() throws IOException {
     if (usesEmptyNewlineAndIndent) {
