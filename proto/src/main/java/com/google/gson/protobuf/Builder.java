@@ -21,9 +21,14 @@ public class Builder {
         this.jsonFormat = jsonFormat;
     }
 
+
     public Builder setEnumSerialization(ProtoTypeAdapter.EnumSerialization enumSerialization) {
         this.enumSerialization = enumSerialization;
         return this;
+    }
+
+    public ProtoTypeAdapter.EnumSerialization getEnumSerialization() {
+        return this.enumSerialization;
     }
 
     public Builder setFieldNameSerializationFormat(CaseFormat protoFormat, CaseFormat jsonFormat) {
