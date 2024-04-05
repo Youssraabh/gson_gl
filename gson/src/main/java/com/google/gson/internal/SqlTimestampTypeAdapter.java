@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.google.gson.internal.sql;
+package com.google.gson.internal;
 
 import com.google.gson.Gson;
 import com.google.gson.TypeAdapter;

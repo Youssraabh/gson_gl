@@ -14,10 +14,15 @@
  * limitations under the License.
  */
 
-package com.google.gson.internal.sql;
+package com.google.gson.internal;
 
 import com.google.gson.TypeAdapterFactory;
+import com.google.gson.internal.SqlTimeTypeAdapter;
+import com.google.gson.internal.SqlDateTypeAdapter;
 import com.google.gson.internal.bind.DefaultDateTypeAdapter.DateType;
+import com.google.gson.internal.SqlTimeTypeAdapter;
+import com.google.gson.internal.SqlTimestampTypeAdapter;
+
 import java.sql.Timestamp;
 import java.util.Date;
 
