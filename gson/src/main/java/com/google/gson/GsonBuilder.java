@@ -37,7 +37,7 @@ import com.google.gson.internal.GsonPreconditions;
 import com.google.gson.internal.bind.DefaultDateTypeAdapter;
 import com.google.gson.internal.bind.TreeTypeAdapter;
 import com.google.gson.internal.bind.TypeAdapters;
-import com.google.gson.internal.sql.SqlTypesSupport;
+import com.google.gson.internal.SqlTypesSupport;
 import com.google.gson.reflect.TypeToken;
 import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonWriter;
