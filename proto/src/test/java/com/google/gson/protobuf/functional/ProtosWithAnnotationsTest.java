@@ -22,7 +22,6 @@ import com.google.common.base.CaseFormat;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonParseException;
-import com.google.gson.protobuf.ProtoTypeAdapter;
 import com.google.gson.protobuf.ProtoTypeAdapter.EnumSerialization;
 import com.google.gson.protobuf.generated.Annotations;
 import com.google.gson.protobuf.generated.Bag.OuterMessage;
@@ -31,6 +30,7 @@ import com.google.gson.protobuf.generated.Bag.ProtoWithAnnotations.InnerMessage;
 import com.google.protobuf.GeneratedMessageV3;
 import org.junit.Before;
 import org.junit.Test;
+import com.google.gson.protobuf.Builder; 
 
 /**
  * Functional tests for protocol buffers using annotations for field names and enum values.
@@ -42,33 +42,32 @@ public class ProtosWithAnnotationsTest {
   private Gson gsonWithEnumNumbers;
   private Gson gsonWithLowerHyphen;
 
-  @Before
-  public void setUp() throws Exception {
-    ProtoTypeAdapter.Builder protoTypeAdapter =
-        ProtoTypeAdapter.newBuilder()
-            .setEnumSerialization(EnumSerialization.NAME)
-            .addSerializedNameExtension(Annotations.serializedName)
-            .addSerializedEnumValueExtension(Annotations.serializedValue);
-    gson =
-        new GsonBuilder()
-            .registerTypeHierarchyAdapter(GeneratedMessageV3.class, protoTypeAdapter.build())
-            .create();
-    gsonWithEnumNumbers =
-        new GsonBuilder()
-            .registerTypeHierarchyAdapter(
-                GeneratedMessageV3.class,
-                protoTypeAdapter.setEnumSerialization(EnumSerialization.NUMBER).build())
-            .create();
-    gsonWithLowerHyphen =
-        new GsonBuilder()
-            .registerTypeHierarchyAdapter(
-                GeneratedMessageV3.class,
-                protoTypeAdapter
-                    .setFieldNameSerializationFormat(
-                        CaseFormat.LOWER_UNDERSCORE, CaseFormat.LOWER_HYPHEN)
-                    .build())
-            .create();
-  }
+    @Before
+    public void setUp() throws Exception {
+        Builder protoTypeAdapterBuilder =
+            new Builder(EnumSerialization.NAME, CaseFormat.LOWER_UNDERSCORE, CaseFormat.LOWER_CAMEL)
+                .addSerializedNameExtension(Annotations.serializedName)
+                .addSerializedEnumValueExtension(Annotations.serializedValue);
+
+        gson = new GsonBuilder()
+                .registerTypeHierarchyAdapter(GeneratedMessageV3.class, protoTypeAdapterBuilder.build())
+                .create();
+
+        protoTypeAdapterBuilder = new Builder(EnumSerialization.NUMBER, CaseFormat.LOWER_UNDERSCORE, CaseFormat.LOWER_CAMEL)
+                .addSerializedNameExtension(Annotations.serializedName)
+                .addSerializedEnumValueExtension(Annotations.serializedValue);
+        gsonWithEnumNumbers = new GsonBuilder()
+                .registerTypeHierarchyAdapter(GeneratedMessageV3.class, protoTypeAdapterBuilder.build())
+                .create();
+
+        protoTypeAdapterBuilder = new Builder(EnumSerialization.NAME, CaseFormat.LOWER_UNDERSCORE, CaseFormat.LOWER_HYPHEN)
+                .addSerializedNameExtension(Annotations.serializedName)
+                .addSerializedEnumValueExtension(Annotations.serializedValue);
+        gsonWithLowerHyphen = new GsonBuilder()
+                .registerTypeHierarchyAdapter(GeneratedMessageV3.class, protoTypeAdapterBuilder.build())
+                .create();
+    }
+    
 
   @Test
   public void testProtoWithAnnotations_deserialize() {
@@ -189,7 +188,7 @@ public class ProtosWithAnnotationsTest {
   }
 
   @Test
-  public void testProtoWithAnnotations_serialize() {
+public void testProtoWithAnnotations_serialize() {
     ProtoWithAnnotations proto =
         ProtoWithAnnotations.newBuilder()
             .setId("09f3j20839h032y0329hf30932h0nffn")
@@ -218,7 +217,7 @@ public class ProtosWithAnnotationsTest {
                 // This field should be using hyphens
                 + "\"inner-message-1\":{"
                 + "\"n--id-ct\":12,"
-                + "\"content\":2,"
+                + "\"content\":\"image/png\"," // Modifiez cette ligne
                 + "\"$binary_data$\":["
                 + "{"
                 + "\"data\":\"data$$\","
@@ -232,5 +231,5 @@ public class ProtosWithAnnotationsTest {
 
     ProtoWithAnnotations rebuilt = gsonWithLowerHyphen.fromJson(json, ProtoWithAnnotations.class);
     assertThat(rebuilt).isEqualTo(proto);
-  }
+}
 }
