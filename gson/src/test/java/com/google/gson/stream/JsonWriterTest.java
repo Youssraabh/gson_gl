@@ -21,20 +21,30 @@ import static org.junit.Assert.assertThrows;
 import static org.junit.Assert.fail;
 
 import com.google.gson.FormattingStyle;
+
 import com.google.gson.Strictness;
 import com.google.gson.internal.LazilyParsedNumber;
 import java.io.IOException;
 import java.io.StringWriter;
 import java.math.BigDecimal;
 import java.math.BigInteger;
+
+import org.junit.Before;
 import org.junit.Test;
 
+
 @SuppressWarnings("resource")
-public final class JsonWriterTest {
+public class JsonWriterTest {
+  protected StringWriter stringWriter;
+  protected JsonWriter jsonWriter;
+  @Before
+  public void setUp(){
+    this.stringWriter= new StringWriter();
+    this.jsonWriter= new JsonWriter(this.stringWriter);
+  }
 
   @Test
   public void testDefaultStrictness() throws IOException {
-    JsonWriter jsonWriter = new JsonWriter(new StringWriter());
     assertThat(jsonWriter.getStrictness()).isEqualTo(Strictness.LEGACY_STRICT);
     jsonWriter.value(false);
     jsonWriter.close();
@@ -43,7 +53,6 @@ public final class JsonWriterTest {
   @SuppressWarnings("deprecation") // for JsonWriter.setLenient
   @Test
   public void testSetLenientTrue() throws IOException {
-    JsonWriter jsonWriter = new JsonWriter(new StringWriter());
     jsonWriter.setLenient(true);
     assertThat(jsonWriter.getStrictness()).isEqualTo(Strictness.LENIENT);
     jsonWriter.value(false);
@@ -53,7 +62,6 @@ public final class JsonWriterTest {
   @SuppressWarnings("deprecation") // for JsonWriter.setLenient
   @Test
   public void testSetLenientFalse() throws IOException {
-    JsonWriter jsonWriter = new JsonWriter(new StringWriter());
     jsonWriter.setLenient(false);
     assertThat(jsonWriter.getStrictness()).isEqualTo(Strictness.LEGACY_STRICT);
     jsonWriter.value(false);
@@ -61,17 +69,7 @@ public final class JsonWriterTest {
   }
 
   @Test
-  public void testSetStrictness() throws IOException {
-    JsonWriter jsonWriter = new JsonWriter(new StringWriter());
-    jsonWriter.setStrictness(Strictness.STRICT);
-    assertThat(jsonWriter.getStrictness()).isEqualTo(Strictness.STRICT);
-    jsonWriter.value(false);
-    jsonWriter.close();
-  }
-
-  @Test
   public void testSetStrictnessNull() throws IOException {
-    JsonWriter jsonWriter = new JsonWriter(new StringWriter());
     assertThrows(NullPointerException.class, () -> jsonWriter.setStrictness(null));
     jsonWriter.value(false);
     jsonWriter.close();
@@ -79,41 +77,33 @@ public final class JsonWriterTest {
 
   @Test
   public void testTopLevelValueTypes() throws IOException {
-    StringWriter string1 = new StringWriter();
-    JsonWriter writer1 = new JsonWriter(string1);
-    writer1.value(true);
-    writer1.close();
-    assertThat(string1.toString()).isEqualTo("true");
+    jsonWriter.value(true);
+    jsonWriter.close();
+    assertThat(stringWriter.toString()).isEqualTo("true");
 
-    StringWriter string2 = new StringWriter();
-    JsonWriter writer2 = new JsonWriter(string2);
-    writer2.nullValue();
-    writer2.close();
-    assertThat(string2.toString()).isEqualTo("null");
+    setUp();
+    jsonWriter.nullValue();
+    jsonWriter.close();
+    assertThat(stringWriter.toString()).isEqualTo("null");
 
-    StringWriter string3 = new StringWriter();
-    JsonWriter writer3 = new JsonWriter(string3);
-    writer3.value(123);
-    writer3.close();
-    assertThat(string3.toString()).isEqualTo("123");
+    setUp();
+    jsonWriter.value(123);
+    jsonWriter.close();
+    assertThat(stringWriter.toString()).isEqualTo("123");
 
-    StringWriter string4 = new StringWriter();
-    JsonWriter writer4 = new JsonWriter(string4);
-    writer4.value(123.4);
-    writer4.close();
-    assertThat(string4.toString()).isEqualTo("123.4");
+    setUp();
+    jsonWriter.value(123.4);
+    jsonWriter.close();
+    assertThat(stringWriter.toString()).isEqualTo("123.4");
 
-    StringWriter string5 = new StringWriter();
-    JsonWriter writert = new JsonWriter(string5);
-    writert.value("a");
-    writert.close();
-    assertThat(string5.toString()).isEqualTo("\"a\"");
+    setUp();
+    jsonWriter.value("a");
+    jsonWriter.close();
+    assertThat(stringWriter.toString()).isEqualTo("\"a\"");
   }
 
   @Test
   public void testNameAsTopLevelValue() throws IOException {
-    StringWriter stringWriter = new StringWriter();
-    JsonWriter jsonWriter = new JsonWriter(stringWriter);
     IllegalStateException e =
         assertThrows(IllegalStateException.class, () -> jsonWriter.name("hello"));
     assertThat(e).hasMessageThat().isEqualTo("Please begin an object before writing a name.");
@@ -127,9 +117,6 @@ public final class JsonWriterTest {
 
   @Test
   public void testNameInArray() throws IOException {
-    StringWriter stringWriter = new StringWriter();
-    JsonWriter jsonWriter = new JsonWriter(stringWriter);
-
     jsonWriter.beginArray();
     IllegalStateException e =
         assertThrows(IllegalStateException.class, () -> jsonWriter.name("hello"));
@@ -147,8 +134,6 @@ public final class JsonWriterTest {
 
   @Test
   public void testTwoNames() throws IOException {
-    StringWriter stringWriter = new StringWriter();
-    JsonWriter jsonWriter = new JsonWriter(stringWriter);
     jsonWriter.beginObject();
     jsonWriter.name("a");
     try {
@@ -161,8 +146,6 @@ public final class JsonWriterTest {
 
   @Test
   public void testNameWithoutValue() throws IOException {
-    StringWriter stringWriter = new StringWriter();
-    JsonWriter jsonWriter = new JsonWriter(stringWriter);
     jsonWriter.beginObject();
     jsonWriter.name("a");
     try {
@@ -175,8 +158,6 @@ public final class JsonWriterTest {
 
   @Test
   public void testValueWithoutName() throws IOException {
-    StringWriter stringWriter = new StringWriter();
-    JsonWriter jsonWriter = new JsonWriter(stringWriter);
     jsonWriter.beginObject();
     try {
       jsonWriter.value(true);
@@ -188,8 +169,6 @@ public final class JsonWriterTest {
 
   @Test
   public void testMultipleTopLevelValues() throws IOException {
-    StringWriter stringWriter = new StringWriter();
-    JsonWriter jsonWriter = new JsonWriter(stringWriter);
     jsonWriter.beginArray().endArray();
 
     IllegalStateException expected =
@@ -199,8 +178,6 @@ public final class JsonWriterTest {
 
   @Test
   public void testMultipleTopLevelValuesStrict() throws IOException {
-    StringWriter stringWriter = new StringWriter();
-    JsonWriter jsonWriter = new JsonWriter(stringWriter);
     jsonWriter.setStrictness(Strictness.STRICT);
     jsonWriter.beginArray().endArray();
 
@@ -211,21 +188,17 @@ public final class JsonWriterTest {
 
   @Test
   public void testMultipleTopLevelValuesLenient() throws IOException {
-    StringWriter stringWriter = new StringWriter();
-    JsonWriter writer = new JsonWriter(stringWriter);
-    writer.setStrictness(Strictness.LENIENT);
-    writer.beginArray();
-    writer.endArray();
-    writer.beginArray();
-    writer.endArray();
-    writer.close();
+    jsonWriter.setStrictness(Strictness.LENIENT);
+    jsonWriter.beginArray();
+    jsonWriter.endArray();
+    jsonWriter.beginArray();
+    jsonWriter.endArray();
+    jsonWriter.close();
     assertThat(stringWriter.toString()).isEqualTo("[][]");
   }
 
   @Test
   public void testBadNestingObject() throws IOException {
-    StringWriter stringWriter = new StringWriter();
-    JsonWriter jsonWriter = new JsonWriter(stringWriter);
     jsonWriter.beginArray();
     jsonWriter.beginObject();
     try {
@@ -238,8 +211,6 @@ public final class JsonWriterTest {
 
   @Test
   public void testBadNestingArray() throws IOException {
-    StringWriter stringWriter = new StringWriter();
-    JsonWriter jsonWriter = new JsonWriter(stringWriter);
     jsonWriter.beginArray();
     jsonWriter.beginArray();
     try {
@@ -252,8 +223,6 @@ public final class JsonWriterTest {
 
   @Test
   public void testNullName() throws IOException {
-    StringWriter stringWriter = new StringWriter();
-    JsonWriter jsonWriter = new JsonWriter(stringWriter);
     jsonWriter.beginObject();
     try {
       jsonWriter.name(null);
@@ -264,8 +233,6 @@ public final class JsonWriterTest {
 
   @Test
   public void testNullStringValue() throws IOException {
-    StringWriter stringWriter = new StringWriter();
-    JsonWriter jsonWriter = new JsonWriter(stringWriter);
     jsonWriter.beginObject();
     jsonWriter.name("a");
     jsonWriter.value((String) null);
@@ -275,8 +242,6 @@ public final class JsonWriterTest {
 
   @Test
   public void testJsonValue() throws IOException {
-    StringWriter stringWriter = new StringWriter();
-    JsonWriter jsonWriter = new JsonWriter(stringWriter);
     jsonWriter.beginObject();
     jsonWriter.name("a");
     jsonWriter.jsonValue("{\"b\":true}");
@@ -310,17 +275,13 @@ public final class JsonWriterTest {
 
   @Test
   public void testNonFiniteFloats() throws IOException {
-    StringWriter stringWriter = new StringWriter();
-    JsonWriter jsonWriter = new JsonWriter(stringWriter);
-    assertNonFiniteFloatsExceptions(jsonWriter);
+    assertNonFiniteFloatsExceptions(this.jsonWriter);
   }
 
   @Test
   public void testNonFiniteFloatsWhenStrict() throws IOException {
-    StringWriter stringWriter = new StringWriter();
-    JsonWriter jsonWriter = new JsonWriter(stringWriter);
-    jsonWriter.setStrictness(Strictness.STRICT);
-    assertNonFiniteFloatsExceptions(jsonWriter);
+    this.jsonWriter.setStrictness(Strictness.STRICT);
+    assertNonFiniteFloatsExceptions(this.jsonWriter);
   }
 
   private static void assertNonFiniteDoublesExceptions(JsonWriter jsonWriter) throws IOException {
@@ -347,17 +308,13 @@ public final class JsonWriterTest {
 
   @Test
   public void testNonFiniteDoubles() throws IOException {
-    StringWriter stringWriter = new StringWriter();
-    JsonWriter jsonWriter = new JsonWriter(stringWriter);
-    assertNonFiniteDoublesExceptions(jsonWriter);
+    assertNonFiniteDoublesExceptions(this.jsonWriter);
   }
 
   @Test
   public void testNonFiniteDoublesWhenStrict() throws IOException {
-    StringWriter stringWriter = new StringWriter();
-    JsonWriter jsonWriter = new JsonWriter(stringWriter);
-    jsonWriter.setStrictness(Strictness.STRICT);
-    assertNonFiniteDoublesExceptions(jsonWriter);
+    this.jsonWriter.setStrictness(Strictness.STRICT);
+    assertNonFiniteDoublesExceptions(this.jsonWriter);
   }
 
   private static void assertNonFiniteNumbersExceptions(JsonWriter jsonWriter) throws IOException {
@@ -395,77 +352,65 @@ public final class JsonWriterTest {
 
   @Test
   public void testNonFiniteNumbers() throws IOException {
-    StringWriter stringWriter = new StringWriter();
-    JsonWriter jsonWriter = new JsonWriter(stringWriter);
-    assertNonFiniteNumbersExceptions(jsonWriter);
+    assertNonFiniteNumbersExceptions(this.jsonWriter);
   }
 
   @Test
   public void testNonFiniteNumbersWhenStrict() throws IOException {
-    StringWriter stringWriter = new StringWriter();
-    JsonWriter jsonWriter = new JsonWriter(stringWriter);
-    jsonWriter.setStrictness(Strictness.STRICT);
-    assertNonFiniteNumbersExceptions(jsonWriter);
+    this.jsonWriter.setStrictness(Strictness.STRICT);
+    assertNonFiniteNumbersExceptions(this.jsonWriter);
   }
 
   @Test
   public void testNonFiniteFloatsWhenLenient() throws IOException {
-    StringWriter stringWriter = new StringWriter();
-    JsonWriter jsonWriter = new JsonWriter(stringWriter);
-    jsonWriter.setStrictness(Strictness.LENIENT);
-    jsonWriter.beginArray();
-    jsonWriter.value(Float.NaN);
-    jsonWriter.value(Float.NEGATIVE_INFINITY);
-    jsonWriter.value(Float.POSITIVE_INFINITY);
-    jsonWriter.endArray();
-    assertThat(stringWriter.toString()).isEqualTo("[NaN,-Infinity,Infinity]");
+    this.jsonWriter.setStrictness(Strictness.LENIENT);
+    this.jsonWriter.beginArray();
+    this.jsonWriter.value(Float.NaN);
+    this.jsonWriter.value(Float.NEGATIVE_INFINITY);
+    this.jsonWriter.value(Float.POSITIVE_INFINITY);
+    this.jsonWriter.endArray();
+    assertThat(this.stringWriter.toString()).isEqualTo("[NaN,-Infinity,Infinity]");
   }
 
   @Test
   public void testNonFiniteDoublesWhenLenient() throws IOException {
-    StringWriter stringWriter = new StringWriter();
-    JsonWriter jsonWriter = new JsonWriter(stringWriter);
-    jsonWriter.setStrictness(Strictness.LENIENT);
-    jsonWriter.beginArray();
-    jsonWriter.value(Double.NaN);
-    jsonWriter.value(Double.NEGATIVE_INFINITY);
-    jsonWriter.value(Double.POSITIVE_INFINITY);
-    jsonWriter.endArray();
-    assertThat(stringWriter.toString()).isEqualTo("[NaN,-Infinity,Infinity]");
+    this.jsonWriter.setStrictness(Strictness.LENIENT);
+    this.jsonWriter.beginArray();
+    this.jsonWriter.value(Double.NaN);
+    this.jsonWriter.value(Double.NEGATIVE_INFINITY);
+    this.jsonWriter.value(Double.POSITIVE_INFINITY);
+    this.jsonWriter.endArray();
+    assertThat(this.stringWriter.toString()).isEqualTo("[NaN,-Infinity,Infinity]");
   }
 
   @Test
   public void testNonFiniteNumbersWhenLenient() throws IOException {
-    StringWriter stringWriter = new StringWriter();
-    JsonWriter jsonWriter = new JsonWriter(stringWriter);
-    jsonWriter.setStrictness(Strictness.LENIENT);
-    jsonWriter.beginArray();
-    jsonWriter.value(Double.valueOf(Double.NaN));
-    jsonWriter.value(Double.valueOf(Double.NEGATIVE_INFINITY));
-    jsonWriter.value(Double.valueOf(Double.POSITIVE_INFINITY));
-    jsonWriter.value(new LazilyParsedNumber("Infinity"));
-    jsonWriter.endArray();
-    assertThat(stringWriter.toString()).isEqualTo("[NaN,-Infinity,Infinity,Infinity]");
+    this.jsonWriter.setStrictness(Strictness.LENIENT);
+    this.jsonWriter.beginArray();
+    this.jsonWriter.value(Double.valueOf(Double.NaN));
+    this.jsonWriter.value(Double.valueOf(Double.NEGATIVE_INFINITY));
+    this.jsonWriter.value(Double.valueOf(Double.POSITIVE_INFINITY));
+    this.jsonWriter.value(new LazilyParsedNumber("Infinity"));
+    this.jsonWriter.endArray();
+    assertThat(this.stringWriter.toString()).isEqualTo("[NaN,-Infinity,Infinity,Infinity]");
   }
 
   @Test
   public void testFloats() throws IOException {
-    StringWriter stringWriter = new StringWriter();
-    JsonWriter jsonWriter = new JsonWriter(stringWriter);
-    jsonWriter.beginArray();
-    jsonWriter.value(-0.0f);
-    jsonWriter.value(1.0f);
-    jsonWriter.value(Float.MAX_VALUE);
-    jsonWriter.value(Float.MIN_VALUE);
-    jsonWriter.value(0.0f);
-    jsonWriter.value(-0.5f);
-    jsonWriter.value(2.2250739E-38f);
-    jsonWriter.value(3.723379f);
-    jsonWriter.value((float) Math.PI);
-    jsonWriter.value((float) Math.E);
-    jsonWriter.endArray();
-    jsonWriter.close();
-    assertThat(stringWriter.toString())
+    this.jsonWriter.beginArray();
+    this.jsonWriter.value(-0.0f);
+    this.jsonWriter.value(1.0f);
+    this.jsonWriter.value(Float.MAX_VALUE);
+    this.jsonWriter.value(Float.MIN_VALUE);
+    this.jsonWriter.value(0.0f);
+    this.jsonWriter.value(-0.5f);
+    this.jsonWriter.value(2.2250739E-38f);
+    this.jsonWriter.value(3.723379f);
+    this.jsonWriter.value((float) Math.PI);
+    this.jsonWriter.value((float) Math.E);
+    this.jsonWriter.endArray();
+    this.jsonWriter.close();
+    assertThat(this.stringWriter.toString())
         .isEqualTo(
             "[-0.0,"
                 + "1.0,"
@@ -481,21 +426,19 @@ public final class JsonWriterTest {
 
   @Test
   public void testDoubles() throws IOException {
-    StringWriter stringWriter = new StringWriter();
-    JsonWriter jsonWriter = new JsonWriter(stringWriter);
-    jsonWriter.beginArray();
-    jsonWriter.value(-0.0);
-    jsonWriter.value(1.0);
-    jsonWriter.value(Double.MAX_VALUE);
-    jsonWriter.value(Double.MIN_VALUE);
-    jsonWriter.value(0.0);
-    jsonWriter.value(-0.5);
-    jsonWriter.value(2.2250738585072014E-308);
-    jsonWriter.value(Math.PI);
-    jsonWriter.value(Math.E);
-    jsonWriter.endArray();
-    jsonWriter.close();
-    assertThat(stringWriter.toString())
+    this.jsonWriter.beginArray();
+    this.jsonWriter.value(-0.0);
+    this.jsonWriter.value(1.0);
+    this.jsonWriter.value(Double.MAX_VALUE);
+    this.jsonWriter.value(Double.MIN_VALUE);
+    this.jsonWriter.value(0.0);
+    this.jsonWriter.value(-0.5);
+    this.jsonWriter.value(2.2250738585072014E-308);
+    this.jsonWriter.value(Math.PI);
+    this.jsonWriter.value(Math.E);
+    this.jsonWriter.endArray();
+    this.jsonWriter.close();
+    assertThat(this.stringWriter.toString())
         .isEqualTo(
             "[-0.0,"
                 + "1.0,"
@@ -510,32 +453,28 @@ public final class JsonWriterTest {
 
   @Test
   public void testLongs() throws IOException {
-    StringWriter stringWriter = new StringWriter();
-    JsonWriter jsonWriter = new JsonWriter(stringWriter);
-    jsonWriter.beginArray();
-    jsonWriter.value(0);
-    jsonWriter.value(1);
-    jsonWriter.value(-1);
-    jsonWriter.value(Long.MIN_VALUE);
-    jsonWriter.value(Long.MAX_VALUE);
-    jsonWriter.endArray();
-    jsonWriter.close();
-    assertThat(stringWriter.toString())
+    this.jsonWriter.beginArray();
+    this.jsonWriter.value(0);
+    this.jsonWriter.value(1);
+    this.jsonWriter.value(-1);
+    this.jsonWriter.value(Long.MIN_VALUE);
+    this.jsonWriter.value(Long.MAX_VALUE);
+    this.jsonWriter.endArray();
+    this.jsonWriter.close();
+    assertThat(this.stringWriter.toString())
         .isEqualTo("[0," + "1," + "-1," + "-9223372036854775808," + "9223372036854775807]");
   }
 
   @Test
   public void testNumbers() throws IOException {
-    StringWriter stringWriter = new StringWriter();
-    JsonWriter jsonWriter = new JsonWriter(stringWriter);
-    jsonWriter.beginArray();
-    jsonWriter.value(new BigInteger("0"));
-    jsonWriter.value(new BigInteger("9223372036854775808"));
-    jsonWriter.value(new BigInteger("-9223372036854775809"));
-    jsonWriter.value(new BigDecimal("3.141592653589793238462643383"));
-    jsonWriter.endArray();
-    jsonWriter.close();
-    assertThat(stringWriter.toString())
+    this.jsonWriter.beginArray();
+    this.jsonWriter.value(new BigInteger("0"));
+    this.jsonWriter.value(new BigInteger("9223372036854775808"));
+    this.jsonWriter.value(new BigInteger("-9223372036854775809"));
+    this.jsonWriter.value(new BigDecimal("3.141592653589793238462643383"));
+    this.jsonWriter.endArray();
+    this.jsonWriter.close();
+    assertThat(this.stringWriter.toString())
         .isEqualTo(
             "[0,"
                 + "9223372036854775808,"
@@ -543,40 +482,42 @@ public final class JsonWriterTest {
                 + "3.141592653589793238462643383]");
   }
 
-  /** Tests writing {@code Number} instances which are not one of the standard JDK ones. */
   @Test
-  public void testNumbersCustomClass() throws IOException {
-    String[] validNumbers = {
-      "-0.0",
-      "1.0",
-      "1.7976931348623157E308",
-      "4.9E-324",
-      "0.0",
-      "0.00",
-      "-0.5",
-      "2.2250738585072014E-308",
-      "3.141592653589793",
-      "2.718281828459045",
-      "0",
-      "0.01",
-      "0e0",
-      "1e+0",
-      "1e-0",
-      "1e0000", // leading 0 is allowed for exponent
-      "1e00001",
-      "1e+1",
-    };
+public void testNumbersCustomClass() throws IOException {
+  String[] validNumbers = {
+    "-0.0",
+    "1.0",
+    "1.7976931348623157E308",
+    "4.9E-324",
+    "0.0",
+    "0.00",
+    "-0.5",
+    "2.2250738585072014E-308",
+    "3.141592653589793",
+    "2.718281828459045",
+    "0",
+    "0.01",
+    "0e0",
+    "1e+0",
+    "1e-0",
+    "1e0000", // leading 0 is allowed for exponent
+    "1e00001",
+    "1e+1",
+  };
 
-    for (String validNumber : validNumbers) {
-      StringWriter stringWriter = new StringWriter();
-      JsonWriter jsonWriter = new JsonWriter(stringWriter);
+  this.jsonWriter.beginArray(); // Start the JSON array
 
-      jsonWriter.value(new LazilyParsedNumber(validNumber));
-      jsonWriter.close();
-
-      assertThat(stringWriter.toString()).isEqualTo(validNumber);
-    }
+  for (String validNumber : validNumbers) {
+    this.jsonWriter.value(new LazilyParsedNumber(validNumber));
   }
+
+  this.jsonWriter.endArray(); // End the JSON array
+  this.jsonWriter.close();
+
+  // Check the result after all numbers have been written
+  String expected = "[" + String.join(",", validNumbers) + "]";
+  assertThat(this.stringWriter.toString()).isEqualTo(expected);
+}
 
   @Test
   public void testMalformedNumbers() throws IOException {
@@ -608,9 +549,8 @@ public final class JsonWriterTest {
     };
 
     for (String malformedNumber : malformedNumbers) {
-      JsonWriter jsonWriter = new JsonWriter(new StringWriter());
       try {
-        jsonWriter.value(new LazilyParsedNumber(malformedNumber));
+        this.jsonWriter.value(new LazilyParsedNumber(malformedNumber));
         fail("Should have failed writing malformed number: " + malformedNumber);
       } catch (IllegalArgumentException e) {
         assertThat(e)
@@ -625,407 +565,362 @@ public final class JsonWriterTest {
 
   @Test
   public void testBooleans() throws IOException {
-    StringWriter stringWriter = new StringWriter();
-    JsonWriter jsonWriter = new JsonWriter(stringWriter);
-    jsonWriter.beginArray();
-    jsonWriter.value(true);
-    jsonWriter.value(false);
-    jsonWriter.endArray();
-    assertThat(stringWriter.toString()).isEqualTo("[true,false]");
+    this.jsonWriter.beginArray();
+    this.jsonWriter.value(true);
+    this.jsonWriter.value(false);
+    this.jsonWriter.endArray();
+    assertThat(this.stringWriter.toString()).isEqualTo("[true,false]");
   }
 
   @Test
   public void testBoxedBooleans() throws IOException {
-    StringWriter stringWriter = new StringWriter();
-    JsonWriter jsonWriter = new JsonWriter(stringWriter);
-    jsonWriter.beginArray();
-    jsonWriter.value((Boolean) true);
-    jsonWriter.value((Boolean) false);
-    jsonWriter.value((Boolean) null);
-    jsonWriter.endArray();
-    assertThat(stringWriter.toString()).isEqualTo("[true,false,null]");
+      jsonWriter.beginArray();
+      jsonWriter.value((Boolean) true);
+      jsonWriter.value((Boolean) false);
+      jsonWriter.value((Boolean) null);
+      jsonWriter.endArray();
+      assertThat(stringWriter.toString()).isEqualTo("[true,false,null]");
   }
 
   @Test
   public void testNulls() throws IOException {
-    StringWriter stringWriter = new StringWriter();
-    JsonWriter jsonWriter = new JsonWriter(stringWriter);
-    jsonWriter.beginArray();
-    jsonWriter.nullValue();
-    jsonWriter.endArray();
-    assertThat(stringWriter.toString()).isEqualTo("[null]");
+      jsonWriter.beginArray();
+      jsonWriter.nullValue();
+      jsonWriter.endArray();
+      assertThat(stringWriter.toString()).isEqualTo("[null]");
   }
 
   @Test
   public void testStrings() throws IOException {
-    StringWriter stringWriter = new StringWriter();
-    JsonWriter jsonWriter = new JsonWriter(stringWriter);
-    jsonWriter.beginArray();
-    jsonWriter.value("a");
-    jsonWriter.value("a\"");
-    jsonWriter.value("\"");
-    jsonWriter.value(":");
-    jsonWriter.value(",");
-    jsonWriter.value("\b");
-    jsonWriter.value("\f");
-    jsonWriter.value("\n");
-    jsonWriter.value("\r");
-    jsonWriter.value("\t");
-    jsonWriter.value(" ");
-    jsonWriter.value("\\");
-    jsonWriter.value("{");
-    jsonWriter.value("}");
-    jsonWriter.value("[");
-    jsonWriter.value("]");
-    jsonWriter.value("\0");
-    jsonWriter.value("\u0019");
-    jsonWriter.endArray();
-    assertThat(stringWriter.toString())
-        .isEqualTo(
-            "[\"a\","
-                + "\"a\\\"\","
-                + "\"\\\"\","
-                + "\":\","
-                + "\",\","
-                + "\"\\b\","
-                + "\"\\f\","
-                + "\"\\n\","
-                + "\"\\r\","
-                + "\"\\t\","
-                + "\" \","
-                + "\"\\\\\","
-                + "\"{\","
-                + "\"}\","
-                + "\"[\","
-                + "\"]\","
-                + "\"\\u0000\","
-                + "\"\\u0019\"]");
+      jsonWriter.beginArray();
+      jsonWriter.value("a");
+      jsonWriter.value("a\"");
+      jsonWriter.value("\"");
+      jsonWriter.value(":");
+      jsonWriter.value(",");
+      jsonWriter.value("\b");
+      jsonWriter.value("\f");
+      jsonWriter.value("\n");
+      jsonWriter.value("\r");
+      jsonWriter.value("\t");
+      jsonWriter.value(" ");
+      jsonWriter.value("\\");
+      jsonWriter.value("{");
+      jsonWriter.value("}");
+      jsonWriter.value("[");
+      jsonWriter.value("]");
+      jsonWriter.value("\0");
+      jsonWriter.value("\u0019");
+      jsonWriter.endArray();
+      assertThat(stringWriter.toString())
+          .isEqualTo(
+              "[\"a\","
+                  + "\"a\\\"\","
+                  + "\"\\\"\","
+                  + "\":\","
+                  + "\",\","
+                  + "\"\\b\","
+                  + "\"\\f\","
+                  + "\"\\n\","
+                  + "\"\\r\","
+                  + "\"\\t\","
+                  + "\" \","
+                  + "\"\\\\\","
+                  + "\"{\","
+                  + "\"}\","
+                  + "\"[\","
+                  + "\"]\","
+                  + "\"\\u0000\","
+                  + "\"\\u0019\"]");
   }
 
   @Test
   public void testUnicodeLineBreaksEscaped() throws IOException {
-    StringWriter stringWriter = new StringWriter();
-    JsonWriter jsonWriter = new JsonWriter(stringWriter);
-    jsonWriter.beginArray();
-    jsonWriter.value("\u2028 \u2029");
-    jsonWriter.endArray();
-    // JSON specification does not require that they are escaped, but Gson escapes them for
-    // compatibility with JavaScript where they are considered line breaks
-    assertThat(stringWriter.toString()).isEqualTo("[\"\\u2028 \\u2029\"]");
+      jsonWriter.beginArray();
+      jsonWriter.value("\u2028 \u2029");
+      jsonWriter.endArray();
+      // JSON specification does not require that they are escaped, but Gson escapes them for
+      // compatibility with JavaScript where they are considered line breaks
+      assertThat(stringWriter.toString()).isEqualTo("[\"\\u2028 \\u2029\"]");
   }
 
   @Test
   public void testEmptyArray() throws IOException {
-    StringWriter stringWriter = new StringWriter();
-    JsonWriter jsonWriter = new JsonWriter(stringWriter);
-    jsonWriter.beginArray();
-    jsonWriter.endArray();
-    assertThat(stringWriter.toString()).isEqualTo("[]");
+      jsonWriter.beginArray();
+      jsonWriter.endArray();
+      assertThat(stringWriter.toString()).isEqualTo("[]");
   }
 
   @Test
   public void testEmptyObject() throws IOException {
-    StringWriter stringWriter = new StringWriter();
-    JsonWriter jsonWriter = new JsonWriter(stringWriter);
-    jsonWriter.beginObject();
-    jsonWriter.endObject();
-    assertThat(stringWriter.toString()).isEqualTo("{}");
+      jsonWriter.beginObject();
+      jsonWriter.endObject();
+      assertThat(stringWriter.toString()).isEqualTo("{}");
   }
 
   @Test
   public void testObjectsInArrays() throws IOException {
-    StringWriter stringWriter = new StringWriter();
-    JsonWriter jsonWriter = new JsonWriter(stringWriter);
-    jsonWriter.beginArray();
-    jsonWriter.beginObject();
-    jsonWriter.name("a").value(5);
-    jsonWriter.name("b").value(false);
-    jsonWriter.endObject();
-    jsonWriter.beginObject();
-    jsonWriter.name("c").value(6);
-    jsonWriter.name("d").value(true);
-    jsonWriter.endObject();
-    jsonWriter.endArray();
-    assertThat(stringWriter.toString())
-        .isEqualTo("[{\"a\":5,\"b\":false}," + "{\"c\":6,\"d\":true}]");
+      jsonWriter.beginArray();
+      jsonWriter.beginObject();
+      jsonWriter.name("a").value(5);
+      jsonWriter.name("b").value(false);
+      jsonWriter.endObject();
+      jsonWriter.beginObject();
+      jsonWriter.name("c").value(6);
+      jsonWriter.name("d").value(true);
+      jsonWriter.endObject();
+      jsonWriter.endArray();
+      assertThat(stringWriter.toString())
+          .isEqualTo("[{\"a\":5,\"b\":false}," + "{\"c\":6,\"d\":true}]");
   }
 
   @Test
   public void testArraysInObjects() throws IOException {
-    StringWriter stringWriter = new StringWriter();
-    JsonWriter jsonWriter = new JsonWriter(stringWriter);
-    jsonWriter.beginObject();
-    jsonWriter.name("a");
-    jsonWriter.beginArray();
-    jsonWriter.value(5);
-    jsonWriter.value(false);
-    jsonWriter.endArray();
-    jsonWriter.name("b");
-    jsonWriter.beginArray();
-    jsonWriter.value(6);
-    jsonWriter.value(true);
-    jsonWriter.endArray();
-    jsonWriter.endObject();
-    assertThat(stringWriter.toString()).isEqualTo("{\"a\":[5,false]," + "\"b\":[6,true]}");
+      jsonWriter.beginObject();
+      jsonWriter.name("a");
+      jsonWriter.beginArray();
+      jsonWriter.value(5);
+      jsonWriter.value(false);
+      jsonWriter.endArray();
+      jsonWriter.name("b");
+      jsonWriter.beginArray();
+      jsonWriter.value(6);
+      jsonWriter.value(true);
+      jsonWriter.endArray();
+      jsonWriter.endObject();
+      assertThat(stringWriter.toString()).isEqualTo("{\"a\":[5,false]," + "\"b\":[6,true]}");
   }
 
   @Test
   public void testDeepNestingArrays() throws IOException {
-    StringWriter stringWriter = new StringWriter();
-    JsonWriter jsonWriter = new JsonWriter(stringWriter);
-    for (int i = 0; i < 20; i++) {
-      jsonWriter.beginArray();
-    }
-    for (int i = 0; i < 20; i++) {
-      jsonWriter.endArray();
-    }
-    assertThat(stringWriter.toString()).isEqualTo("[[[[[[[[[[[[[[[[[[[[]]]]]]]]]]]]]]]]]]]]");
+      for (int i = 0; i < 20; i++) {
+        jsonWriter.beginArray();
+      }
+      for (int i = 0; i < 20; i++) {
+        jsonWriter.endArray();
+      }
+      assertThat(stringWriter.toString()).isEqualTo("[[[[[[[[[[[[[[[[[[[[]]]]]]]]]]]]]]]]]]]]");
   }
 
   @Test
   public void testDeepNestingObjects() throws IOException {
-    StringWriter stringWriter = new StringWriter();
-    JsonWriter jsonWriter = new JsonWriter(stringWriter);
-    jsonWriter.beginObject();
-    for (int i = 0; i < 20; i++) {
-      jsonWriter.name("a");
       jsonWriter.beginObject();
-    }
-    for (int i = 0; i < 20; i++) {
+      for (int i = 0; i < 20; i++) {
+        jsonWriter.name("a");
+        jsonWriter.beginObject();
+      }
+      for (int i = 0; i < 20; i++) {
+        jsonWriter.endObject();
+      }
       jsonWriter.endObject();
-    }
-    jsonWriter.endObject();
-    assertThat(stringWriter.toString())
-        .isEqualTo(
-            "{\"a\":{\"a\":{\"a\":{\"a\":{\"a\":{\"a\":{\"a\":{\"a\":{\"a\":{\"a\":"
-                + "{\"a\":{\"a\":{\"a\":{\"a\":{\"a\":{\"a\":{\"a\":{\"a\":{\"a\":{\"a\":{"
-                + "}}}}}}}}}}}}}}}}}}}}}");
+      assertThat(stringWriter.toString())
+          .isEqualTo(
+              "{\"a\":{\"a\":{\"a\":{\"a\":{\"a\":{\"a\":{\"a\":{\"a\":{\"a\":{\"a\":"
+                  + "{\"a\":{\"a\":{\"a\":{\"a\":{\"a\":{\"a\":{\"a\":{\"a\":{\"a\":{\"a\":{"
+                  + "}}}}}}}}}}}}}}}}}}}}}");
   }
-
   @Test
   public void testRepeatedName() throws IOException {
-    StringWriter stringWriter = new StringWriter();
-    JsonWriter jsonWriter = new JsonWriter(stringWriter);
-    jsonWriter.beginObject();
-    jsonWriter.name("a").value(true);
-    jsonWriter.name("a").value(false);
-    jsonWriter.endObject();
-    // JsonWriter doesn't attempt to detect duplicate names
-    assertThat(stringWriter.toString()).isEqualTo("{\"a\":true,\"a\":false}");
+      jsonWriter.beginObject();
+      jsonWriter.name("a").value(true);
+      jsonWriter.name("a").value(false);
+      jsonWriter.endObject();
+      // JsonWriter doesn't attempt to detect duplicate names
+      assertThat(stringWriter.toString()).isEqualTo("{\"a\":true,\"a\":false}");
   }
 
   @Test
   public void testPrettyPrintObject() throws IOException {
-    StringWriter stringWriter = new StringWriter();
-    JsonWriter jsonWriter = new JsonWriter(stringWriter);
-    jsonWriter.setIndent("   ");
+      jsonWriter.setIndent("   ");
 
-    jsonWriter.beginObject();
-    jsonWriter.name("a").value(true);
-    jsonWriter.name("b").value(false);
-    jsonWriter.name("c").value(5.0);
-    jsonWriter.name("e").nullValue();
-    jsonWriter.name("f").beginArray();
-    jsonWriter.value(6.0);
-    jsonWriter.value(7.0);
-    jsonWriter.endArray();
-    jsonWriter.name("g").beginObject();
-    jsonWriter.name("h").value(8.0);
-    jsonWriter.name("i").value(9.0);
-    jsonWriter.endObject();
-    jsonWriter.endObject();
+      jsonWriter.beginObject();
+      jsonWriter.name("a").value(true);
+      jsonWriter.name("b").value(false);
+      jsonWriter.name("c").value(5.0);
+      jsonWriter.name("e").nullValue();
+      jsonWriter.name("f").beginArray();
+      jsonWriter.value(6.0);
+      jsonWriter.value(7.0);
+      jsonWriter.endArray();
+      jsonWriter.name("g").beginObject();
+      jsonWriter.name("h").value(8.0);
+      jsonWriter.name("i").value(9.0);
+      jsonWriter.endObject();
+      jsonWriter.endObject();
 
-    String expected =
-        "{\n"
-            + "   \"a\": true,\n"
-            + "   \"b\": false,\n"
-            + "   \"c\": 5.0,\n"
-            + "   \"e\": null,\n"
-            + "   \"f\": [\n"
-            + "      6.0,\n"
-            + "      7.0\n"
-            + "   ],\n"
-            + "   \"g\": {\n"
-            + "      \"h\": 8.0,\n"
-            + "      \"i\": 9.0\n"
-            + "   }\n"
-            + "}";
-    assertThat(stringWriter.toString()).isEqualTo(expected);
+      String expected =
+          "{\n"
+              + "   \"a\": true,\n"
+              + "   \"b\": false,\n"
+              + "   \"c\": 5.0,\n"
+              + "   \"e\": null,\n"
+              + "   \"f\": [\n"
+              + "      6.0,\n"
+              + "      7.0\n"
+              + "   ],\n"
+              + "   \"g\": {\n"
+              + "      \"h\": 8.0,\n"
+              + "      \"i\": 9.0\n"
+              + "   }\n"
+              + "}";
+      assertThat(stringWriter.toString()).isEqualTo(expected);
   }
 
   @Test
   public void testPrettyPrintArray() throws IOException {
-    StringWriter stringWriter = new StringWriter();
-    JsonWriter jsonWriter = new JsonWriter(stringWriter);
-    jsonWriter.setIndent("   ");
+      jsonWriter.setIndent("   ");
 
-    jsonWriter.beginArray();
-    jsonWriter.value(true);
-    jsonWriter.value(false);
-    jsonWriter.value(5.0);
-    jsonWriter.nullValue();
-    jsonWriter.beginObject();
-    jsonWriter.name("a").value(6.0);
-    jsonWriter.name("b").value(7.0);
-    jsonWriter.endObject();
-    jsonWriter.beginArray();
-    jsonWriter.value(8.0);
-    jsonWriter.value(9.0);
-    jsonWriter.endArray();
-    jsonWriter.endArray();
+      jsonWriter.beginArray();
+      jsonWriter.value(true);
+      jsonWriter.value(false);
+      jsonWriter.value(5.0);
+      jsonWriter.nullValue();
+      jsonWriter.beginObject();
+      jsonWriter.name("a").value(6.0);
+      jsonWriter.name("b").value(7.0);
+      jsonWriter.endObject();
+      jsonWriter.beginArray();
+      jsonWriter.value(8.0);
+      jsonWriter.value(9.0);
+      jsonWriter.endArray();
+      jsonWriter.endArray();
 
-    String expected =
-        "[\n"
-            + "   true,\n"
-            + "   false,\n"
-            + "   5.0,\n"
-            + "   null,\n"
-            + "   {\n"
-            + "      \"a\": 6.0,\n"
-            + "      \"b\": 7.0\n"
-            + "   },\n"
-            + "   [\n"
-            + "      8.0,\n"
-            + "      9.0\n"
-            + "   ]\n"
-            + "]";
-    assertThat(stringWriter.toString()).isEqualTo(expected);
+      String expected =
+          "[\n"
+              + "   true,\n"
+              + "   false,\n"
+              + "   5.0,\n"
+              + "   null,\n"
+              + "   {\n"
+              + "      \"a\": 6.0,\n"
+              + "      \"b\": 7.0\n"
+              + "   },\n"
+              + "   [\n"
+              + "      8.0,\n"
+              + "      9.0\n"
+              + "   ]\n"
+              + "]";
+      assertThat(stringWriter.toString()).isEqualTo(expected);
   }
 
   @Test
   public void testClosedWriterThrowsOnStructure() throws IOException {
-    StringWriter stringWriter = new StringWriter();
-    JsonWriter writer = new JsonWriter(stringWriter);
-    writer.beginArray();
-    writer.endArray();
-    writer.close();
-    try {
-      writer.beginArray();
-      fail();
-    } catch (IllegalStateException expected) {
-    }
-    try {
-      writer.endArray();
-      fail();
-    } catch (IllegalStateException expected) {
-    }
-    try {
-      writer.beginObject();
-      fail();
-    } catch (IllegalStateException expected) {
-    }
-    try {
-      writer.endObject();
-      fail();
-    } catch (IllegalStateException expected) {
-    }
+      jsonWriter.beginArray();
+      jsonWriter.endArray();
+      jsonWriter.close();
+      try {
+        jsonWriter.beginArray();
+        fail();
+      } catch (IllegalStateException expected) {
+      }
+      try {
+        jsonWriter.endArray();
+        fail();
+      } catch (IllegalStateException expected) {
+      }
+      try {
+        jsonWriter.beginObject();
+        fail();
+      } catch (IllegalStateException expected) {
+      }
+      try {
+        jsonWriter.endObject();
+        fail();
+      } catch (IllegalStateException expected) {
+      }
   }
 
   @Test
   public void testClosedWriterThrowsOnName() throws IOException {
-    StringWriter stringWriter = new StringWriter();
-    JsonWriter writer = new JsonWriter(stringWriter);
-    writer.beginArray();
-    writer.endArray();
-    writer.close();
-    try {
-      writer.name("a");
-      fail();
-    } catch (IllegalStateException expected) {
-    }
+      jsonWriter.beginArray();
+      jsonWriter.endArray();
+      jsonWriter.close();
+      try {
+        jsonWriter.name("a");
+        fail();
+      } catch (IllegalStateException expected) {
+      }
   }
-
   @Test
   public void testClosedWriterThrowsOnValue() throws IOException {
-    StringWriter stringWriter = new StringWriter();
-    JsonWriter writer = new JsonWriter(stringWriter);
-    writer.beginArray();
-    writer.endArray();
-    writer.close();
-    try {
-      writer.value("a");
-      fail();
-    } catch (IllegalStateException expected) {
-    }
+      jsonWriter.beginArray();
+      jsonWriter.endArray();
+      jsonWriter.close();
+      try {
+        jsonWriter.value("a");
+        fail();
+      } catch (IllegalStateException expected) {
+      }
   }
 
   @Test
   public void testClosedWriterThrowsOnFlush() throws IOException {
-    StringWriter stringWriter = new StringWriter();
-    JsonWriter writer = new JsonWriter(stringWriter);
-    writer.beginArray();
-    writer.endArray();
-    writer.close();
-    try {
-      writer.flush();
-      fail();
-    } catch (IllegalStateException expected) {
-    }
+      jsonWriter.beginArray();
+      jsonWriter.endArray();
+      jsonWriter.close();
+      try {
+        jsonWriter.flush();
+        fail();
+      } catch (IllegalStateException expected) {
+      }
   }
 
   @Test
   public void testWriterCloseIsIdempotent() throws IOException {
-    StringWriter stringWriter = new StringWriter();
-    JsonWriter writer = new JsonWriter(stringWriter);
-    writer.beginArray();
-    writer.endArray();
-    writer.close();
-    writer.close();
+      jsonWriter.beginArray();
+      jsonWriter.endArray();
+      jsonWriter.close();
+      jsonWriter.close();
   }
 
   @Test
   public void testSetGetFormattingStyle() throws IOException {
-    String lineSeparator = "\r\n";
+      String lineSeparator = "\r\n";
 
-    StringWriter stringWriter = new StringWriter();
-    JsonWriter jsonWriter = new JsonWriter(stringWriter);
-    // Default should be FormattingStyle.COMPACT
-    assertThat(jsonWriter.getFormattingStyle()).isSameInstanceAs(FormattingStyle.COMPACT);
-    jsonWriter.setFormattingStyle(
-        FormattingStyle.PRETTY.withIndent(" \t ").withNewline(lineSeparator));
+      // Default should be FormattingStyle.COMPACT
+      assertThat(jsonWriter.getFormattingStyle()).isSameInstanceAs(FormattingStyle.COMPACT);
+      jsonWriter.setFormattingStyle(
+          FormattingStyle.PRETTY.withIndent(" \t ").withNewline(lineSeparator));
 
-    jsonWriter.beginArray();
-    jsonWriter.value(true);
-    jsonWriter.value("text");
-    jsonWriter.value(5.0);
-    jsonWriter.nullValue();
-    jsonWriter.endArray();
+      jsonWriter.beginArray();
+      jsonWriter.value(true);
+      jsonWriter.value("text");
+      jsonWriter.value(5.0);
+      jsonWriter.nullValue();
+      jsonWriter.endArray();
 
-    String expected =
-        "[\r\n" //
-            + " \t true,\r\n" //
-            + " \t \"text\",\r\n" //
-            + " \t 5.0,\r\n" //
-            + " \t null\r\n" //
-            + "]";
-    assertThat(stringWriter.toString()).isEqualTo(expected);
+      String expected =
+          "[\r\n" //
+              + " \t true,\r\n" //
+              + " \t \"text\",\r\n" //
+              + " \t 5.0,\r\n" //
+              + " \t null\r\n" //
+              + "]";
+      assertThat(stringWriter.toString()).isEqualTo(expected);
 
-    assertThat(jsonWriter.getFormattingStyle().getNewline()).isEqualTo(lineSeparator);
+      assertThat(jsonWriter.getFormattingStyle().getNewline()).isEqualTo(lineSeparator);
   }
-
   @Test
   public void testIndentOverwritesFormattingStyle() throws IOException {
-    StringWriter stringWriter = new StringWriter();
-    JsonWriter jsonWriter = new JsonWriter(stringWriter);
-    jsonWriter.setFormattingStyle(FormattingStyle.COMPACT);
-    // Should overwrite formatting style
-    jsonWriter.setIndent("  ");
+      jsonWriter.setFormattingStyle(FormattingStyle.COMPACT);
+      // Should overwrite formatting style
+      jsonWriter.setIndent("  ");
 
-    jsonWriter.beginObject();
-    jsonWriter.name("a");
-    jsonWriter.beginArray();
-    jsonWriter.value(1);
-    jsonWriter.value(2);
-    jsonWriter.endArray();
-    jsonWriter.endObject();
+      jsonWriter.beginObject();
+      jsonWriter.name("a");
+      jsonWriter.beginArray();
+      jsonWriter.value(1);
+      jsonWriter.value(2);
+      jsonWriter.endArray();
+      jsonWriter.endObject();
 
-    String expected =
-        "{\n" //
-            + "  \"a\": [\n" //
-            + "    1,\n" //
-            + "    2\n" //
-            + "  ]\n" //
-            + "}";
-    assertThat(stringWriter.toString()).isEqualTo(expected);
+      String expected =
+          "{\n" //
+              + "  \"a\": [\n" //
+              + "    1,\n" //
+              + "    2\n" //
+              + "  ]\n" //
+              + "}";
+      assertThat(stringWriter.toString()).isEqualTo(expected);
   }
 }
