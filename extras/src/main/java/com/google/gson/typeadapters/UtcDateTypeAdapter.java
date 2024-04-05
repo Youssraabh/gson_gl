@@ -63,6 +63,8 @@ public final class UtcDateTypeAdapter extends TypeAdapter<Date> {
   // Date parsing code from Jackson databind ISO8601Utils.java
   // https://github.com/FasterXML/jackson-databind/blob/2.8/src/main/java/com/fasterxml/jackson/databind/util/ISO8601Utils.java
   private static final String GMT_ID = "GMT";
+  private static final int MILLIS_PER_MINUTE = 60 * 1000;
+  private static final int MINUTES_IN_HOUR = 60;
 
   /**
    * Format date into yyyy-MM-ddThh:mm:ss[.sss][Z|[+-]hh:mm]
@@ -100,8 +102,8 @@ public final class UtcDateTypeAdapter extends TypeAdapter<Date> {
 
     int offset = tz.getOffset(calendar.getTimeInMillis());
     if (offset != 0) {
-      int hours = Math.abs((offset / (60 * 1000)) / 60);
-      int minutes = Math.abs((offset / (60 * 1000)) % 60);
+      int hours = Math.abs((offset / MILLIS_PER_MINUTE) / MINUTES_IN_HOUR);
+      int minutes = Math.abs((offset / MILLIS_PER_MINUTE) % MINUTES_IN_HOUR);
       formatted.append(offset < 0 ? '-' : '+');
       padInt(formatted, hours, "hh".length());
       formatted.append(':');
