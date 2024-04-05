@@ -14,10 +14,11 @@
  * limitations under the License.
  */
 
-package com.google.gson.internal.sql;
+package com.google.gson.internal;
 
 import static com.google.common.truth.Truth.assertThat;
 
+import com.google.gson.internal.SqlTypesSupport;
 import org.junit.Test;
 
 public class SqlTypesSupportTest {

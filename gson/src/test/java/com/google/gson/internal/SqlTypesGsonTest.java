@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.google.gson.internal.sql;
+package com.google.gson.internal;
 
 import static com.google.common.truth.Truth.assertThat;
 
